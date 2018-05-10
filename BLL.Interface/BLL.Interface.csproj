@@ -40,11 +40,25 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\Account.cs" />
+    <Compile Include="Entities\BaseAccount.cs" />
+    <Compile Include="Entities\GoldAccount.cs" />
+    <Compile Include="Entities\PersonalInfo.cs" />
+    <Compile Include="Entities\PlatinumAccount.cs" />
+    <Compile Include="Entities\SilverAccount.cs" />
+    <Compile Include="Enum\AccountType.cs" />
+    <Compile Include="Interfaces\IAccountNumberCreateService.cs" />
+    <Compile Include="Interfaces\IAccountService.cs" />
+    <Compile Include="Interfaces\IPersonalInfoService.cs" />
+    <Compile Include="Interfaces\IStringValidator.cs" />
+    <Compile Include="Interfaces\IVerifyPersonalInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Entities\" />
-    <Folder Include="Interfaces\" />
+    <ProjectReference Include="..\DAL.Interface\DAL.Interface.csproj">
+      <Project>{9501e6ea-aa42-46b3-b9aa-ee8aec8697c9}</Project>
+      <Name>DAL.Interface</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

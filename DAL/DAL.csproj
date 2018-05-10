@@ -30,9 +30,18 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
     <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
     </Reference>
@@ -44,7 +53,34 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Account.cs">
+      <DependentUpon>AccountModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AccountModel.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AccountModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AccountModel.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AccountModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AccountModel.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AccountModel.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Exceptions\ExistInDatabaseException.cs" />
+    <Compile Include="Mappers\Mapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\Repository.cs" />
+    <Compile Include="Type.cs">
+      <DependentUpon>AccountModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="User.cs">
+      <DependentUpon>AccountModel.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DAL.Interface\DAL.Interface.csproj">
@@ -53,10 +89,30 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EntityDeploy Include="AccountModel.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>AccountModel.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <None Include="AccountModel.edmx.diagram">
+      <DependentUpon>AccountModel.edmx</DependentUpon>
+    </None>
+    <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Repositories\" />
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="AccountModel.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>AccountModel.edmx</DependentUpon>
+      <LastGenOutput>AccountModel.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="AccountModel.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>AccountModel.edmx</DependentUpon>
+      <LastGenOutput>AccountModel.cs</LastGenOutput>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

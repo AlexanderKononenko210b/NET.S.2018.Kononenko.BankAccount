@@ -1,0 +1,210 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="AccountModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Accounts">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="AccountType" Type="int" Nullable="false" />
+          <Property Name="NumberOfAccount" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="Balance" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="IsClosed" Type="bit" Nullable="false" />
+          <Property Name="BenefitPoints" Type="int" Nullable="false" />
+          <Property Name="PersonalInfo" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Types">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="AccountType" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Users">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FirstName" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="LastName" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Email" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Passport" Type="nvarchar(max)" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_Accounts_ToTypes">
+          <End Role="Types" Type="Self.Types" Multiplicity="1" />
+          <End Role="Accounts" Type="Self.Accounts" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Types">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Accounts">
+              <PropertyRef Name="AccountType" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Accounts_ToUsers">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="Accounts" Type="Self.Accounts" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Accounts">
+              <PropertyRef Name="PersonalInfo" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="AccountModelStoreContainer">
+          <EntitySet Name="Accounts" EntityType="Self.Accounts" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Types" EntityType="Self.Types" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Accounts_ToTypes" Association="Self.FK_Accounts_ToTypes">
+            <End Role="Types" EntitySet="Types" />
+            <End Role="Accounts" EntitySet="Accounts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Accounts_ToUsers" Association="Self.FK_Accounts_ToUsers">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Accounts" EntitySet="Accounts" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="AccountModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Account">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="AccountType" Type="Int32" Nullable="false" />
+          <Property Name="NumberOfAccount" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Balance" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="IsClosed" Type="Boolean" Nullable="false" />
+          <Property Name="BenefitPoints" Type="Int32" Nullable="false" />
+          <Property Name="PersonalInfo" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Type" Relationship="Self.FK_Accounts_ToTypes" FromRole="Accounts" ToRole="Types" />
+          <NavigationProperty Name="User" Relationship="Self.FK_Accounts_ToUsers" FromRole="Accounts" ToRole="Users" />
+        </EntityType>
+        <EntityType Name="Type">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="AccountType" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Accounts" Relationship="Self.FK_Accounts_ToTypes" FromRole="Types" ToRole="Accounts" />
+        </EntityType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FirstName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="LastName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Email" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Passport" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Accounts" Relationship="Self.FK_Accounts_ToUsers" FromRole="Users" ToRole="Accounts" />
+        </EntityType>
+        <Association Name="FK_Accounts_ToTypes">
+          <End Role="Types" Type="Self.Type" Multiplicity="1" />
+          <End Role="Accounts" Type="Self.Account" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Types">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Accounts">
+              <PropertyRef Name="AccountType" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Accounts_ToUsers">
+          <End Role="Users" Type="Self.User" Multiplicity="1" />
+          <End Role="Accounts" Type="Self.Account" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Accounts">
+              <PropertyRef Name="PersonalInfo" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="AccountEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Accounts" EntityType="Self.Account" />
+          <EntitySet Name="Types" EntityType="Self.Type" />
+          <EntitySet Name="Users" EntityType="Self.User" />
+          <AssociationSet Name="FK_Accounts_ToTypes" Association="Self.FK_Accounts_ToTypes">
+            <End Role="Types" EntitySet="Types" />
+            <End Role="Accounts" EntitySet="Accounts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Accounts_ToUsers" Association="Self.FK_Accounts_ToUsers">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Accounts" EntitySet="Accounts" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="AccountModelStoreContainer" CdmEntityContainer="AccountEntities">
+          <EntitySetMapping Name="Accounts">
+            <EntityTypeMapping TypeName="AccountModel.Account">
+              <MappingFragment StoreEntitySet="Accounts">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="AccountType" ColumnName="AccountType" />
+                <ScalarProperty Name="NumberOfAccount" ColumnName="NumberOfAccount" />
+                <ScalarProperty Name="Balance" ColumnName="Balance" />
+                <ScalarProperty Name="IsClosed" ColumnName="IsClosed" />
+                <ScalarProperty Name="BenefitPoints" ColumnName="BenefitPoints" />
+                <ScalarProperty Name="PersonalInfo" ColumnName="PersonalInfo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Types">
+            <EntityTypeMapping TypeName="AccountModel.Type">
+              <MappingFragment StoreEntitySet="Types">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="AccountType" ColumnName="AccountType" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Users">
+            <EntityTypeMapping TypeName="AccountModel.User">
+              <MappingFragment StoreEntitySet="Users">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Passport" ColumnName="Passport" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

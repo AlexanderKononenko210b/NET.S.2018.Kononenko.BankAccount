@@ -96,5 +96,10 @@ namespace DAL.Fake.Repositories
         {
             return list;
         }
+
+        public AccountDto Get(int id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

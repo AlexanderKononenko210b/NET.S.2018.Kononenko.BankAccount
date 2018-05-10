@@ -85,14 +85,14 @@ namespace BLL.ServiceImplementation
 
             var result = repository.Update(firstDto);
 
-            if (result == null)
+            if (result == null || result.Balance != first.Balance)
                 throw new InvalidOperationException($"Update after withdraw in transfer between two Accounts is not valid");
 
             var secondDto = second.AccountToAccountDto();
 
             result = repository.Update(secondDto);
 
-            if (result == null)
+            if (result == null || result.Balance != second.Balance)
                 throw new InvalidOperationException($"Update after deposit in transfer between two Accounts is not valid");
 
             return true;
@@ -115,7 +115,7 @@ namespace BLL.ServiceImplementation
 
             var result = repository.Update(accountDto);
 
-            if (result == null)
+            if (result == null || result.IsClosed != account.IsClosed)
                 throw new InvalidOperationException($"Update after Close Account is not valid");
 
             return account.IsClosed;
@@ -136,7 +136,7 @@ namespace BLL.ServiceImplementation
 
             var resultSave = repository.Update(accountDto);
 
-            if (resultSave == null)
+            if (resultSave == null || resultSave.Balance != account.Balance)
                 throw new InvalidOperationException($"Update after Diposit Account is not valid");
 
             return account.Balance;
@@ -160,7 +160,7 @@ namespace BLL.ServiceImplementation
 
             var resultSave = repository.Update(accountDto);
 
-            if (resultSave == null)
+            if (resultSave == null || resultSave.Balance != account.Balance)
                 throw new InvalidOperationException($"Update after WithDraw Account is not valid");
 
             return account.Balance;

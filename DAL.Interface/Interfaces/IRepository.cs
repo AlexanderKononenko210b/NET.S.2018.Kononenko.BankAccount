@@ -19,6 +19,8 @@ namespace DAL.Interface.Interfaces
 
         T Get(string number);
 
+        T Get(int id);
+
         T Update(T model);
 
         T Delete(T model);

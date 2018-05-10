@@ -192,7 +192,28 @@ namespace DAL.Repositories
 
             context.SaveChanges();
 
-            return model;
+            return accountForUpdate.AccontModelToAccountDto();
+        }
+
+        /// <summary>
+        /// Get AccountDto by id
+        /// </summary>
+        /// <param name="id">identificator</param>
+        /// <returns>instance type AccountDto</returns>
+        public AccountDto Get(int id)
+        {
+            if (isDisposed)
+                throw new ObjectDisposedException($"Context {nameof(context)} is disposed");
+
+            if (id < 0)
+                throw new ArgumentNullException($"Argument {nameof(id)} is not valid");
+
+            var accountDto = context.Accounts.SingleOrDefault(item => item.Id == id);
+
+            if(accountDto == null)
+                throw new ExistInDatabaseException($"Account with id = {id} is absent in DataBase");
+
+            return accountDto.AccontModelToAccountDto();
         }
 
         #endregion

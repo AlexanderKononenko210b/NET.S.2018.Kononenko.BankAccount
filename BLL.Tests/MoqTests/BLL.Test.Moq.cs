@@ -31,6 +31,10 @@ namespace BLL.Tests.MoqTests
 
         private PersonalInfoDto personalInfoDto;
 
+        private AccountDto accountDtoFirst;
+
+        private AccountDto accountDtoSecond;
+
         private AccountDto accountDto;
 
         #endregion
@@ -66,7 +70,27 @@ namespace BLL.Tests.MoqTests
                 IsClosed = false,
                 NumberOfAccount = numberAccount,
                 PersonalInfo = personalInfoDto
+            };
+
+            accountDtoFirst = new AccountDto
+            {
+                AccountType = AccountTypeDto.Base,
+                Balance = new decimal(5),
+                BenefitPoints = 1,
+                IsClosed = false,
+                NumberOfAccount = numberAccount,
+                PersonalInfo = personalInfoDto
 			};
+
+            accountDtoSecond = new AccountDto
+            {
+                AccountType = AccountTypeDto.Base,
+                Balance = new decimal(15),
+                BenefitPoints = 1,
+                IsClosed = false,
+                NumberOfAccount = numberAccount,
+                PersonalInfo = personalInfoDto
+            };
         }
 
         #endregion
@@ -124,23 +148,17 @@ namespace BLL.Tests.MoqTests
         public void WithDraw_Account_With_Valid_Data()
         {
             this.mockRepository.Setup(item => item.Update(It.IsAny<AccountDto>()))
-                .Returns(() => accountDto).Callback(() => accountDto.Balance -= 100);
+                .Returns(() => accountDto).Callback(() => accountDto.Balance -= 5);
 
             var service = new AccountService(mockRepository.Object);
 
             var account = AccountFactory.Create(AccountType.Base, personalInfo, new NumberCreateService());
 
-            var resultDeposit = service.DepositAccount(account, 1000);
+            var resultWithDraw = service.WithDrawAccount(account, 5);
 
-			Assert.AreEqual(1010m, resultDeposit);
-			Assert.AreEqual(1010m, account.Balance);
-            Assert.AreEqual(1010m, account.BenefitPoints);
-
-            var resultWithDraw = service.WithDrawAccount(account, 500);
-
-            Assert.AreEqual(510m, resultWithDraw);
-            Assert.AreEqual(510m, account.Balance);
-            Assert.AreEqual(510, account.BenefitPoints);
+            Assert.AreEqual(5m, resultWithDraw);
+            Assert.AreEqual(5m, account.Balance);
+            Assert.AreEqual(5, account.BenefitPoints);
         }
 
         /// <summary>
@@ -149,8 +167,9 @@ namespace BLL.Tests.MoqTests
         [TestCase]
         public void Transfer_Account_With_Valid_Data()
         {
-            this.mockRepository.Setup(item => item.Update(It.IsAny<AccountDto>()))
-                .Returns(() => accountDto).Callback(() => accountDto.Balance -= 100);
+            this.mockRepository.SetupSequence(item => item.Update(It.IsAny<AccountDto>()))
+                .Returns(accountDtoFirst)
+                .Returns(accountDtoSecond);
 
             var service = new AccountService(mockRepository.Object);
 
@@ -179,8 +198,12 @@ namespace BLL.Tests.MoqTests
         [TestCase]
         public void Close_Account()
         {
+            accountDto.IsClosed = true;
+
+            accountDto.Balance = 0;
+
             this.mockRepository.Setup(item => item.Update(It.IsAny<AccountDto>()))
-                .Returns(() => accountDto).Callback(() => accountDto.IsClosed = true);
+                .Returns(() => accountDto);
 
             var service = new AccountService(mockRepository.Object);
 

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BLL.Interface.Interfaces;
 
-namespace BLL.ServiceImplementation
+namespace BLL.Service
 {
     /// <summary>
     /// Service for create unique number account

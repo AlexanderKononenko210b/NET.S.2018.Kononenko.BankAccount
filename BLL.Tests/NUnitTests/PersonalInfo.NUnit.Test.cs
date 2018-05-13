@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BLL.Interface.Entities;
-using BLL.ServiceImplementation;
+using BLL.Service;
 using DAL.Interface.DTO;
 using DAL.Interface.Interfaces;
 using Moq;
@@ -71,15 +71,14 @@ namespace BLL.Tests.NUnitTests
         [TestCase]
         public void Create_PersonalInfo_With_Valid_Data()
         {
-            var personalInfoService = new PersonalInfoService();
+            var userService = new UserService();
 
-            var userInfo = personalInfoService.Create("Fedor", "Bondarchuk", "RT1234136", "bondarchuk@gmail.com",
-                new PersonalInfoValidateService());
+            var user = userService.Create("Fedor", "Bondarchuk", "RT1234136", "bondarchuk@gmail.com");
 
-            Assert.AreEqual("Fedor", userInfo.Item1.FirstName);
-            Assert.AreEqual("Bondarchuk", userInfo.Item1.LastName);
-            Assert.AreEqual("RT1234136", userInfo.Item1.Passport);
-            Assert.AreEqual("bondarchuk@gmail.com", userInfo.Item1.Email);
+            Assert.AreEqual("Fedor", user.FirstName);
+            Assert.AreEqual("Bondarchuk", user.LastName);
+            Assert.AreEqual("RT1234136", user.Passport);
+            Assert.AreEqual("bondarchuk@gmail.com", user.Email);
         }
 
         /// <summary>
@@ -88,12 +87,10 @@ namespace BLL.Tests.NUnitTests
         [TestCase]
         public void Create_PersonalInfo_If_Input_FirstName_Is_Null()
         {
-            var personalInfoService = new PersonalInfoService();
+            var userService = new UserService();
 
-            var userInfo = personalInfoService.Create(null, "Bondarchuk", "RT1234136", "bondarchuk@gmail.com",
-                new PersonalInfoValidateService());
-
-            Assert.AreEqual(null, userInfo.Item1);
+            Assert.Throws<ArgumentNullException>(() =>
+                userService.Create(null, "Bondarchuk", "RT1234136", "bondarchuk@gmail.com"));
         }
 
         /// <summary>
@@ -102,12 +99,10 @@ namespace BLL.Tests.NUnitTests
         [TestCase]
         public void Create_PersonalInfo_If_Input_FirstName_Is_Empty()
         {
-            var personalInfoService = new PersonalInfoService();
+            var userService = new UserService();
 
-            var userInfo = personalInfoService.Create("", "Bondarchuk", "RT1234136", "bondarchuk@gmail.com",
-                new PersonalInfoValidateService());
-
-            Assert.AreEqual(null, userInfo.Item1);
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+                userService.Create("", "Bondarchuk", "RT1234136", "bondarchuk@gmail.com"));
         }
 
         /// <summary>
@@ -116,12 +111,10 @@ namespace BLL.Tests.NUnitTests
         [TestCase]
         public void Create_PersonalInfo_If_Input_FirstName_Is_WhiteSpace()
         {
-            var personalInfoService = new PersonalInfoService();
+            var userService = new UserService();
 
-            var userInfo = personalInfoService.Create(" ", "Bondarchuk", "RT1234136", "bondarchuk@gmail.com",
-                new PersonalInfoValidateService());
-
-            Assert.AreEqual(null, userInfo.Item1);
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+                userService.Create(" ", "Bondarchuk", "RT1234136", "bondarchuk@gmail.com"));
         }
 
         /// <summary>
@@ -130,12 +123,10 @@ namespace BLL.Tests.NUnitTests
         [TestCase]
         public void Create_PersonalInfo_If_Input_FirstName_Is_Not_According_BLL_Rule()
         {
-            var personalInfoService = new PersonalInfoService();
+            var userService = new UserService();
 
-            var userInfo = personalInfoService.Create("1234", "Bondarchuk", "RT1234136", "bondarchuk@gmail.com",
-                new PersonalInfoValidateService());
-
-            Assert.AreEqual(null, userInfo.Item1);
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+                userService.Create("1234", "Bondarchuk", "RT1234136", "bondarchuk@gmail.com"));
         }
 
         /// <summary>
@@ -144,12 +135,10 @@ namespace BLL.Tests.NUnitTests
         [TestCase]
         public void Create_PersonalInfo_If_Input_LastName_Is_Not_According_BLL_Rule()
         {
-            var personalInfoService = new PersonalInfoService();
+            var userService = new UserService();
 
-            var userInfo = personalInfoService.Create("Fedor", "ewr123", "RT1234136", "bondarchuk@gmail.com",
-                new PersonalInfoValidateService());
-
-            Assert.AreEqual(null, userInfo.Item1);
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+                userService.Create("Fedor", "bondarchuk", "RT1234136", "bondarchuk@gmail.com"));
         }
 
         /// <summary>
@@ -158,12 +147,10 @@ namespace BLL.Tests.NUnitTests
         [TestCase]
         public void Create_PersonalInfo_If_Input_Pasport_Number_Is_Not_According_BLL_Rule()
         {
-            var personalInfoService = new PersonalInfoService();
+            var userService = new UserService();
 
-            var userInfo = personalInfoService.Create("Fedor", "Bondarchuk", "RT12341", "bondarchuk@gmail.com",
-                new PersonalInfoValidateService());
-
-            Assert.AreEqual(null, userInfo.Item1);
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+                userService.Create("Fedor", "bondarchuk", "RT12341", "bondarchuk@gmail.com"));
         }
 
         /// <summary>
@@ -172,12 +159,10 @@ namespace BLL.Tests.NUnitTests
         [TestCase]
         public void Create_PersonalInfo_If_Input_Email_Is_Not_According_BLL_Rule()
         {
-            var personalInfoService = new PersonalInfoService();
+            var userService = new UserService();
 
-            var userInfo = personalInfoService.Create("Fedor", "Bondarchuk", "RT1234136", "bondarchukgmail.com",
-                new PersonalInfoValidateService());
-
-            Assert.AreEqual(null, userInfo.Item1);
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+                userService.Create("Fedor", "bondarchuk", "RT1234136", "bondarchukgmail.com"));
         }
 
         #endregion

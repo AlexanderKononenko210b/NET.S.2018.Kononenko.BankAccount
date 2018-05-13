@@ -7,7 +7,7 @@ using BLL.Factories;
 using BLL.Interface.Entities;
 using BLL.Interface.Enum;
 using BLL.Interface.Interfaces;
-using BLL.ServiceImplementation;
+using BLL.Service;
 using DAL.Interface.DTO;
 using DAL.Interface.Interfaces;
 using NUnit.Framework;

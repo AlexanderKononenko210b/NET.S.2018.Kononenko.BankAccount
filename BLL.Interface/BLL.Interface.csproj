@@ -49,8 +49,7 @@
     <Compile Include="Enum\AccountType.cs" />
     <Compile Include="Interfaces\IAccountNumberCreateService.cs" />
     <Compile Include="Interfaces\IAccountService.cs" />
-    <Compile Include="Interfaces\IPersonalInfoService.cs" />
-    <Compile Include="Interfaces\IStringValidator.cs" />
+    <Compile Include="Interfaces\IUserService.cs" />
     <Compile Include="Interfaces\IVerifyPersonalInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

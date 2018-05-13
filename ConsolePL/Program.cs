@@ -22,8 +22,6 @@ namespace ConsolePL
         {
             IAccountService service = resolver.Get<IAccountService>();
             IAccountNumberCreateService creator = resolver.Get<IAccountNumberCreateService>();
-            IPersonalInfoService personal = resolver.Get<IPersonalInfoService>();
-            IVerifyPersonalInfo<IStringValidator> validator = resolver.Get<IVerifyPersonalInfo<IStringValidator>>();
             
             Console.WriteLine("All in collection");
             Console.WriteLine();

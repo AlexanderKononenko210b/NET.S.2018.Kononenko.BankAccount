@@ -13,7 +13,7 @@ using BLL.Validators;
 using DAL.Interface.DTO;
 using DAL.Interface.Interfaces;
 
-namespace BLL.ServiceImplementation
+namespace BLL.Service
 {
     /// <summary>
     /// Service for work with account

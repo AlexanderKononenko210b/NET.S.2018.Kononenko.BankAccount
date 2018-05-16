@@ -7,7 +7,7 @@ using BLL.Interface.Entities;
 using BLL.Interface.Enum;
 using BLL.Interface.Interfaces;
 using BLL.Mappers;
-using DAL.Interface.DTO;
+using DAL.Interface.Dto;
 
 namespace BLL.Factories
 {
@@ -16,28 +16,6 @@ namespace BLL.Factories
     /// </summary>
     public static class AccountFactory
     {
-        /// <summary>
-        /// Create instance on AccountTypeDto information
-        /// </summary>
-        /// <param name="type">AccountTypeDto</param>
-        /// <returns>new instance AccountTypeDto</returns>
-        public static Account Create(AccountTypeDto type)
-        {
-            switch (type)
-            {
-                case AccountTypeDto.Base:
-                    return new BaseAccount();
-                case AccountTypeDto.Silver:
-                    return new SilverAccount();
-                case AccountTypeDto.Gold:
-                    return new GoldAccount();
-                case AccountTypeDto.Platinum:
-                    return new PlatinumAccount();
-                default:
-                    throw new InvalidOperationException($"Unknown type {nameof(type)} for create");
-            }
-        }
-
         /// <summary>
         /// Create instance on AccountType information
         /// </summary>
@@ -56,53 +34,53 @@ namespace BLL.Factories
                 case AccountType.Platinum:
                     return new PlatinumAccount();
                 default:
-                    throw new InvalidOperationException($"Unknown type {nameof(type)} for create");
+                    throw new InvalidOperationException($"Unknown type {type} for create account");
             }
         }
 
         /// <summary>
         /// Create instance on AccountDto information
         /// </summary>
-        /// <param name="type">AccountDto instance</param>
+        /// <param name="accountDto">AccountDto instance</param>
         /// <returns>new instance type Account</returns>
-        public static Account Create(AccountDto type)
+        public static Account Create(AccountDto accountDto)
         {
-            switch (type.AccountType)
+            switch (accountDto.AccountType)
             {
                 case AccountTypeDto.Base:
-                    return new BaseAccount(type);
+                    return new BaseAccount(accountDto);
                 case AccountTypeDto.Silver:
-                    return new SilverAccount(type);
+                    return new SilverAccount(accountDto);
                 case AccountTypeDto.Gold:
-                    return new GoldAccount(type);
+                    return new GoldAccount(accountDto);
                 case AccountTypeDto.Platinum:
-                    return new PlatinumAccount(type);
+                    return new PlatinumAccount(accountDto);
                 default:
-                    throw new InvalidOperationException($"Unknown type {nameof(type)} for create");
+                    throw new InvalidOperationException($"Unknown type {accountDto} for create account");
             }
         }
 
         /// <summary>
-        /// Create instance on AccountType information, PersonalInfo and IAccountNumberCreateService
+        /// Create instance on AccountType information, userInfo and IAccountNumberCreateService
         /// </summary>
         /// <param name="type">AccountType type</param>
-        /// <param name="info">PersonalInfo instance</param>
+        /// <param name="userId">id user</param>
         /// <param name="creator">IAccountNumberCreateService instance</param>
         /// <returns>new instance Account</returns>
-        public static Account Create(AccountType type, PersonalInfo info, IAccountNumberCreateService creator)
+        public static Account Create(AccountType type, int userId, IAccountNumberCreateService creator)
         {
             switch (type)
             {
                 case AccountType.Base:
-                    return new BaseAccount(info, creator);
+                    return new BaseAccount(userId, creator);
                 case AccountType.Silver:
-                    return new SilverAccount(info, creator);
+                    return new SilverAccount(userId, creator);
                 case AccountType.Gold:
-                    return new GoldAccount(info, creator);
+                    return new GoldAccount(userId, creator);
                 case AccountType.Platinum:
-                    return new PlatinumAccount(info, creator);
+                    return new PlatinumAccount(userId, creator);
                 default:
-                    throw new InvalidOperationException($"Unknown type {nameof(type)} for create");
+                    throw new InvalidOperationException($"Unknown type {type} for create account");
             }
         }
     }

@@ -4,13 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BLL.Exceptions;
 using BLL.Factories;
 using BLL.Interface.Entities;
 using BLL.Interface.Enum;
 using BLL.Interface.Interfaces;
 using BLL.Mappers;
 using BLL.Validators;
-using DAL.Interface.DTO;
+using DAL.Interface.Dto;
 using DAL.Interface.Interfaces;
 
 namespace BLL.Service
@@ -22,15 +23,15 @@ namespace BLL.Service
     {
         #region Fields
 
-        private IRepository<AccountDto> repository;
+        private IUnitOfWork unitOfWork;
 
         #endregion
 
         #region Constructors
 
-        public AccountService(IRepository<AccountDto> repository)
+        public AccountService(IUnitOfWork unitOfWork )
         {
-            this.repository = repository;
+            this.unitOfWork = unitOfWork;
         }
 
         #endregion
@@ -41,25 +42,30 @@ namespace BLL.Service
         /// Open account 
         /// </summary>
         /// <param name="type">type account</param>
-        /// <param name="info">personal info</param>
+        /// <param name="userId">user Id</param>
         /// <param name="creator">type account</param>
         /// <returns>new account</returns>
-        public Account OpenAccount(AccountType type, PersonalInfo info, IAccountNumberCreateService creator)
+        public Account OpenAccount(AccountType type, int userId, IAccountNumberCreateService creator)
         {
-            Check.NotNull(info);
-
             Check.NotNull(creator);
 
-            var account = AccountFactory.Create(type, info, creator);
+            var user = unitOfWork.UserRepository.Get(userId);
 
-            var accountDto = account.AccountToAccountDto();
+            if (user == null)
+                throw new ExistInDatabaseException($"User with Id : {userId} is not exist in database");
 
-            var result = repository.Add(accountDto);
+            var account = AccountFactory.Create(type, userId, creator);
+
+            var accountDto = Mapper<Account, AccountDto>.Map(account);
+
+            var result = unitOfWork.AccountRepository.Add(accountDto);
 
             if (result == null)
-                throw new InvalidOperationException($"Add new Account.Dto is not valid");
+                throw new InvalidOperationException($"Add new AccountDto is not valid");
 
-            return account;
+            unitOfWork.Commit();
+
+            return Mapper<AccountDto, Account>.Map(result);
         }
 
         /// <summary>
@@ -68,8 +74,8 @@ namespace BLL.Service
         /// <param name="first">account for withdraw</param>
         /// <param name="second">account for deposit</param>
         /// <param name="transfer">transfer value</param>
-        /// <returns>balance account with transfer money</returns>
-        public bool Transfer(Account first, Account second, decimal transfer)
+        /// <returns>Item1 - account for deposit, Item2 - account for withdraw</returns>
+        public (Account, Account) Transfer(Account first, Account second, decimal transfer)
         {
             Check.NotNull(first);
 
@@ -81,21 +87,23 @@ namespace BLL.Service
 
             second.Deposit(transfer);
 
-            var firstDto = first.AccountToAccountDto();
+            var firstDto = Mapper<Account, AccountDto>.Map(first);
 
-            var result = repository.Update(firstDto);
+            var resultDeposit = unitOfWork.AccountRepository.Update(firstDto);
 
-            if (result == null || result.Balance != first.Balance)
+            if (resultDeposit == null || resultDeposit.Balance != first.Balance)
                 throw new InvalidOperationException($"Update after withdraw in transfer between two Accounts is not valid");
 
-            var secondDto = second.AccountToAccountDto();
+            var secondDto = Mapper<Account, AccountDto>.Map(second);
 
-            result = repository.Update(secondDto);
+            var resultWithDraw = unitOfWork.AccountRepository.Update(secondDto);
 
-            if (result == null || result.Balance != second.Balance)
+            if (resultWithDraw == null || resultWithDraw.Balance != second.Balance)
                 throw new InvalidOperationException($"Update after deposit in transfer between two Accounts is not valid");
 
-            return true;
+            unitOfWork.Commit();
+
+            return (Mapper<AccountDto, Account>.Map(resultDeposit), Mapper<AccountDto, Account>.Map(resultWithDraw));
         }
 
         /// <summary>
@@ -111,12 +119,14 @@ namespace BLL.Service
 
             account.Close();
 
-            var accountDto = account.AccountToAccountDto();
+            var accountDto = Mapper<Account, AccountDto>.Map(account);
 
-            var result = repository.Update(accountDto);
+            var result = unitOfWork.AccountRepository.Update(accountDto);
 
             if (result == null || result.IsClosed != account.IsClosed)
                 throw new InvalidOperationException($"Update after Close Account is not valid");
+
+            unitOfWork.Commit();
 
             return account.IsClosed;
         }
@@ -132,12 +142,14 @@ namespace BLL.Service
 
             account.Deposit(deposit);
 
-            var accountDto = account.AccountToAccountDto();
+            var accountDto = Mapper<Account, AccountDto>.Map(account);
 
-            var resultSave = repository.Update(accountDto);
+            var resultSave = unitOfWork.AccountRepository.Update(accountDto);
 
             if (resultSave == null || resultSave.Balance != account.Balance)
                 throw new InvalidOperationException($"Update after Diposit Account is not valid");
+
+            unitOfWork.Commit();
 
             return account.Balance;
         }
@@ -156,12 +168,14 @@ namespace BLL.Service
 
             account.WithDraw(withdraw);
 
-            var accountDto = account.AccountToAccountDto();
+            var accountDto = Mapper<Account, AccountDto>.Map(account);
 
-            var resultSave = repository.Update(accountDto);
+            var resultSave = unitOfWork.AccountRepository.Update(accountDto);
 
             if (resultSave == null || resultSave.Balance != account.Balance)
                 throw new InvalidOperationException($"Update after WithDraw Account is not valid");
+
+            unitOfWork.Commit();
 
             return account.Balance;
         }
@@ -172,14 +186,10 @@ namespace BLL.Service
         /// <returns></returns>
         public IEnumerable<Account> GetAll()
         {
-            List<Account> accounts = new List<Account>();
-
-            foreach (var item in repository.GetAll())
+            foreach (var item in unitOfWork.AccountRepository.GetAll())
             {
-                accounts.Add(item.AccountDtoToAccount());
+                yield return Mapper<AccountDto, Account>.Map(item);
             }
-
-            return accounts;
         }
 
         /// <summary>
@@ -191,9 +201,9 @@ namespace BLL.Service
             if (number == null)
                 throw new ArgumentNullException($"Argument {nameof(number)} is null");
 
-            var accountDto = repository.Get(number);
+            var accountDto = unitOfWork.AccountRepository.Get(number);
 
-            var account = accountDto.AccountDtoToAccount();
+            var account = Mapper<AccountDto, Account>.Map(accountDto);
 
             return account;
         }

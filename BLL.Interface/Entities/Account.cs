@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BLL.Interface.Enum;
 using BLL.Interface.Interfaces;
-using DAL.Interface.DTO;
+using DAL.Interface.Dto;
 
 namespace BLL.Interface.Entities
 {
@@ -24,9 +24,11 @@ namespace BLL.Interface.Entities
 
         #region Fields
 
+        private int id;
+
         private string numberOfAccount;
 
-        private PersonalInfo personalInfo = new PersonalInfo();
+        private int userId;
 
         private decimal balance = MIN_AMOUNT_WITHDRAW;
 
@@ -46,9 +48,9 @@ namespace BLL.Interface.Entities
         /// <summary>
         /// Create instance account
         /// </summary>
-        internal Account(PersonalInfo personalInfo, IAccountNumberCreateService creator)
+        internal Account(int userId, IAccountNumberCreateService creator)
         {
-            this.personalInfo = personalInfo;
+            this.userId = userId;
 
             this.numberOfAccount = creator.GetNumberAccount();
         }
@@ -59,6 +61,8 @@ namespace BLL.Interface.Entities
         /// <param name="accountDto"></param>
         internal Account(AccountDto accountDto)
         {
+            this.Id = accountDto.Id;
+
             this.NumberOfAccount = accountDto.NumberOfAccount;
 
             this.Balance = accountDto.Balance;
@@ -67,21 +71,22 @@ namespace BLL.Interface.Entities
 
             this.IsClosed = accountDto.IsClosed;
 
-            if(accountDto.PersonalInfo != null)
-                this.PersonalInfo = new PersonalInfo();
-
-            this.PersonalInfo.FirstName = accountDto.PersonalInfo.FirstName;
-
-            this.PersonalInfo.LastName = accountDto.PersonalInfo.LastName;
-
-            this.PersonalInfo.Email = accountDto.PersonalInfo.Email;
-
-            this.PersonalInfo.Passport = accountDto.PersonalInfo.Passport;
+            this.UserId = accountDto.UserId;
         }
 
-        #endregion Constructors
+        #endregion
 
         #region Public Api
+
+        /// <summary>
+        /// Get id account
+        /// </summary>
+        public int Id
+        {
+            get => id;
+
+            protected set => id = value;
+        }
 
         /// <summary>
         /// Get number bank account
@@ -94,13 +99,13 @@ namespace BLL.Interface.Entities
         }
 
         /// <summary>
-        /// Get identificator owner Account
+        /// Get identificator User Account
         /// </summary>
-        public PersonalInfo PersonalInfo
+        public int UserId
         {
-            get => personalInfo;
+            get => userId;
 
-            protected set => personalInfo = value;
+            protected set => userId = value;
         }
 
         /// <summary>
@@ -142,15 +147,28 @@ namespace BLL.Interface.Entities
         /// Public method for deposit money
         /// </summary>
         /// <param name="deposit">deposit`s value</param>
-        /// <returns>Account</returns>
-        internal decimal Deposit(decimal deposit)
+        /// <returns>deposit`s value</returns>
+        public decimal Deposit(decimal deposit)
         {
-            return DepositMoney(deposit);
+            this.Balance += deposit;
+
+            CalculateBenefitDeposit(deposit);
+
+            return this.Balance;
         }
 
-        internal decimal WithDraw(decimal withdraw)
+        /// <summary>
+        /// Public method for withdraw money
+        /// </summary>
+        /// <param name="withdraw">withdraw`s value</param>
+        /// <returns>withdraw`s value</returns>
+        public decimal WithDraw(decimal withdraw)
         {
-            return WithDrawMoney(withdraw);
+            this.Balance -= withdraw;
+
+            CalculateBenefitWithDraw(withdraw);
+
+            return this.Balance;
         }
 
         internal bool Close()
@@ -164,28 +182,14 @@ namespace BLL.Interface.Entities
         /// <returns>instance in string representation</returns>
         public override string ToString()
         {
-            return $"Number account: {this.NumberOfAccount}, Balanse: {this.Balance}"+
-            $" Owner: {this.PersonalInfo.FirstName}" +
-            $" {this.PersonalInfo.LastName}, Passport: {this.PersonalInfo.Passport}, Email: {this.PersonalInfo.Email}";
+            return
+                $"Number account: {this.NumberOfAccount}, Balanse: {this.Balance}, BenefitPoints: {this.BenefitPoints}" +
+                $" IsClosed : {this.IsClosed}";
         }
 
         #endregion
 
         #region Abstract methods
-
-        /// <summary>
-        /// Deposit money in Account
-        /// </summary>
-        /// <param name="deposit">deposit value</param>
-        /// <returns>new balance</returns>
-        protected abstract decimal DepositMoney(decimal deposit);
-
-        /// <summary>
-        /// WithDraw money in Account
-        /// </summary>
-        /// <param name="withdraw">withdraw value</param>
-        /// <returns>new balance</returns>
-        protected abstract decimal WithDrawMoney(decimal withdraw);
 
         /// <summary>
         /// Mark account as close

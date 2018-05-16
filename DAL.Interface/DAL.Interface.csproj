@@ -40,10 +40,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DTO\AccountDto.cs" />
-    <Compile Include="DTO\AccountTypeDto.cs" />
-    <Compile Include="DTO\PersonalInfoDto.cs" />
+    <Compile Include="DbModels\AccountDbModel.cs" />
+    <Compile Include="DbModels\AccountTypeDbModel.cs" />
+    <Compile Include="DbModels\Entity.cs" />
+    <Compile Include="DbModels\UserInfoDbModel.cs" />
+    <Compile Include="Dto\AccountDto.cs" />
+    <Compile Include="Dto\AccountTypeDto.cs" />
+    <Compile Include="Dto\UserInfoDto.cs" />
+    <Compile Include="Interfaces\IAccountRepository.cs" />
+    <Compile Include="Interfaces\IOwnerRepository.cs" />
     <Compile Include="Interfaces\IRepository.cs" />
+    <Compile Include="Interfaces\IUnitOfWork.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

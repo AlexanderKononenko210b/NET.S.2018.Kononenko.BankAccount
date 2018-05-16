@@ -38,7 +38,7 @@ namespace BLL.Service
         /// <summary>
         /// Counter number account
         /// </summary>
-        private int countAccountInDepartment;
+        private int countAccountInDepartment = 4;
 
         /// <summary>
         /// Field save instance

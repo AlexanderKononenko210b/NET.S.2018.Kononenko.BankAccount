@@ -10,7 +10,7 @@ namespace BLL.Validators
     /// <summary>
     /// Validator information about user
     /// </summary>
-    public static class PersonalInfoValidator
+    public static class UserValidator
     {
         /// <summary>
         /// Method for validate first name

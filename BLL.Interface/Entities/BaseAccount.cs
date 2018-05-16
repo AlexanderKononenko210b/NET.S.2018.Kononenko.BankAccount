@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BLL.Interface.Enum;
 using BLL.Interface.Interfaces;
-using DAL.Interface.DTO;
+using DAL.Interface.Dto;
 
 namespace BLL.Interface.Entities
 {
@@ -33,8 +33,8 @@ namespace BLL.Interface.Entities
         internal BaseAccount(AccountDto accountDto)
             : base(accountDto) { }
 
-        internal BaseAccount(PersonalInfo info, IAccountNumberCreateService creator)
-            : base(info, creator) { }
+        internal BaseAccount(int userId, IAccountNumberCreateService creator)
+            : base(userId, creator) { }
 
         #endregion
 
@@ -57,7 +57,7 @@ namespace BLL.Interface.Entities
             if (ReferenceEquals(this, other)) return true;
 
             if (this.AccountType != other.AccountType || this.NumberOfAccount != other.NumberOfAccount
-                || this.IsClosed != other.IsClosed || this.PersonalInfo != other.PersonalInfo
+                || this.IsClosed != other.IsClosed || this.UserId != other.UserId
                 || this.Balance != other.Balance || this.BenefitPoints != other.BenefitPoints)
                 return false;
 
@@ -87,7 +87,7 @@ namespace BLL.Interface.Entities
         public override int GetHashCode()
         {
             return this.AccountType.GetHashCode() + this.NumberOfAccount.GetHashCode()
-                   + this.IsClosed.GetHashCode() + this.PersonalInfo.GetHashCode()
+                   + this.IsClosed.GetHashCode() + this.UserId.GetHashCode()
                    + this.Balance.GetHashCode() + this.BenefitPoints.GetHashCode();
         }
 
@@ -137,34 +137,6 @@ namespace BLL.Interface.Entities
             this.IsClosed = true;
 
             return this.IsClosed;
-        }
-
-        /// <summary>
-        /// Deposit money in Account
-        /// </summary>
-        /// <param name="deposit">deposit value</param>
-        /// <returns>new balance</returns>
-        protected override decimal DepositMoney(decimal deposit)
-        {
-            this.Balance += deposit;
-
-            CalculateBenefitDeposit(deposit);
-
-            return this.Balance;
-        }
-
-        /// <summary>
-        /// WithDraw money in Account
-        /// </summary>
-        /// <param name="withdraw">withdraw value</param>
-        /// <returns>new balance</returns>
-        protected override decimal WithDrawMoney(decimal withdraw)
-        {
-            this.Balance -= withdraw;
-
-            CalculateBenefitWithDraw(withdraw);
-
-            return this.Balance;
         }
 
         #endregion

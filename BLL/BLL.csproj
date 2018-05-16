@@ -44,15 +44,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Exceptions\ExistInDatabaseException.cs" />
     <Compile Include="Factories\AccountFactory.cs" />
     <Compile Include="Mappers\Mapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service\AccountService.cs" />
     <Compile Include="Service\NumberCreateService.cs" />
-    <Compile Include="Service\PersonalInfoService.cs" />
+    <Compile Include="Service\UserService.cs" />
     <Compile Include="Validators\AccountValidator.cs" />
     <Compile Include="Validators\Check.cs" />
-    <Compile Include="Validators\PersonalInfoValidator.cs" />
+    <Compile Include="Validators\UserValidator.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BLL.Interface\BLL.Interface.csproj">

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DAL.Interface.DTO
+namespace DAL.Interface.Dto
 {
     /// <summary>
     /// Enum type account

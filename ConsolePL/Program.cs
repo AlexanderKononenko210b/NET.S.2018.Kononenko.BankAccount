@@ -20,74 +20,75 @@ namespace ConsolePL
 
         static void Main(string[] args)
         {
-            IAccountService service = resolver.Get<IAccountService>();
+            IAccountService accountService = resolver.Get<IAccountService>();
+            IUserService userService = resolver.Get<IUserService>();
             IAccountNumberCreateService creator = resolver.Get<IAccountNumberCreateService>();
-            
+
             Console.WriteLine("All in collection");
             Console.WriteLine();
 
-            foreach (var item in service.GetAll())
+            foreach (var item in accountService.GetAll())
             {
                 Console.WriteLine(item);
             }
 
             try
             {
-                //var person = personal.Create("Fedor", "Bondarchuk", "RT1234136", "bondarchuk@gmail.com", validator);
+                //var person = userService.Create("Fedor", "Bondarchuk", "RT1234134", "bondarchuk@gmail.com");
 
-                //if (person.Item1 == null)
-                //    Console.WriteLine(person.Item2);
-
-                //service.OpenAccount(AccountType.Base, person.Item1, creator);
+                //accountService.OpenAccount(AccountType.Base, person.Id, creator);
+                //accountService.OpenAccount(AccountType.Silver, person.Id, creator);
+                //accountService.OpenAccount(AccountType.Gold, person.Id, creator);
+                //accountService.OpenAccount(AccountType.Platinum, person.Id, creator);
 
                 //Console.WriteLine("After add in collection");
                 //Console.WriteLine();
 
-                //foreach (var item in service.GetAll())
+                //foreach (var item in accountService.GetAll())
                 //{
                 //    Console.WriteLine(item);
                 //}
 
-                var account = service.GetByNumber("40512100790000000004");
+                var account = accountService.GetByNumber("40512100790000000004");
 
                 if (account == null)
                     Console.WriteLine("Account is absent in database");
 
                 Console.WriteLine($"Befor withdraw Balance : {account.Balance}, BenefitPoints : {account.BenefitPoints}");
 
-                service.WithDrawAccount(account, 100);
+                accountService.WithDrawAccount(account, 100);
 
-                account = service.GetByNumber("40512100790000000004");
+                account = accountService.GetByNumber("40512100790000000004");
 
                 Console.WriteLine($"After withdraw 100 Balance : {account.Balance}, BenefitPoints : {account.BenefitPoints}");
 
-                service.DepositAccount(account, 200);
+                accountService.DepositAccount(account, 200);
 
-                account = service.GetByNumber("40512100790000000004");
+                account = accountService.GetByNumber("40512100790000000004");
 
                 Console.WriteLine($"After deposite 200 Balance : {account.Balance}, BenefitPoints : {account.BenefitPoints}");
 
 
-                foreach (var item in service.GetAll())
+                foreach (var item in accountService.GetAll().ToList())
                 {
-                    service.DepositAccount(item, 100);
+                    accountService.DepositAccount(item, 100);
                 }
 
                 Console.WriteLine("After deposit 100");
 
-                foreach (var item in service.GetAll())
+                foreach (var item in accountService.GetAll())
                 {
                     Console.WriteLine(item);
                 }
 
-                foreach (var t in service.GetAll())
+                foreach (var t in accountService.GetAll().ToList())
                 {
-                    service.WithDrawAccount(t, 100);
+                    accountService.WithDrawAccount(t, 100);
                 }
 
                 Console.WriteLine("After withdraw 100");
 
-                foreach (var item in service.GetAll())
+                foreach (var item in accountService.GetAll())
                 {
                     Console.WriteLine(item);
                 }

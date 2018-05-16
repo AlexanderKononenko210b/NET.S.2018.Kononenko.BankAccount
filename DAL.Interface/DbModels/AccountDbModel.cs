@@ -3,20 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DAL.Interface.DbModels;
 
-namespace DAL.Interface.Dto
+namespace DAL.Interface.DbModels
 {
     /// <summary>
-    /// Dto model account
+    /// Class describe entity account in database
     /// </summary>
-    public class AccountDto : Entity
+    public class AccountDbModel : Entity
     {
-        /// <summary>
-        /// Get account type
-        /// </summary>
-        public AccountTypeDto AccountType { get; set; }
-
         /// <summary>
         /// Get number bank account
         /// </summary>
@@ -38,8 +32,17 @@ namespace DAL.Interface.Dto
         public int BenefitPoints { get; set; }
 
         /// <summary>
+        /// Get account type
+        /// </summary>
+        public int TypeId { get; set; }
+
+        /// <summary>
         /// Get or set user info
         /// </summary>
         public int UserId { get; set; }
+
+        public virtual UserInfoDbModel User { get; set; }
+
+        public virtual AccountTypeDbModel Type { get; set; }
     }
 }

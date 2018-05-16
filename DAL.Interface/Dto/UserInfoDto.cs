@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using DAL.Interface.DbModels;
 
-namespace DAL.Interface.DTO
+namespace DAL.Interface.Dto
 {
     /// <summary>
-    /// Class describe personal info
+    /// Class describe user info
     /// </summary>
-    public sealed class PersonalInfoDto
+    public sealed class UserInfoDto : Entity
     {
         #region Public Api
 

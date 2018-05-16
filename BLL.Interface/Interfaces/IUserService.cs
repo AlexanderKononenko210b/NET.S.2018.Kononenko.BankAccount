@@ -12,6 +12,6 @@ namespace BLL.Interface.Interfaces
     /// </summary>
     public interface IUserService
     {
-        PersonalInfo Create(string firstName, string lastName, string passport, string email);
+        UserInfo Create(string firstName, string lastName, string passport, string email);
     }
 }

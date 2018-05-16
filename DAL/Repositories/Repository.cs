@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -6,30 +7,38 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using DAL.Exceptions;
-using DAL.Interface.DTO;
+using DAL.Interface.DbModels;
 using DAL.Interface.Interfaces;
 using DAL.Mappers;
+using DAL.Validators;
 
 namespace DAL.Repositories
 {
     /// <summary>
-    /// Repository for work with database using Entity Framework and an approach DataBaseFirst
+    /// Base class for all repositories. 
+    /// It is implements logic CRUD operation for all repository
     /// </summary>
-    public class Repository : IRepository<AccountDto>, IDisposable
+    public class Repository<T,P> : IRepository<T,P>, IDisposable
+        where T : Entity
+        where P : Entity
     {
         #region Fields
 
-        private readonly AccountEntities context;
-
         private bool isDisposed;
+
+        private readonly DbContext context;
+
+        private readonly IDbSet<P> dbSet;
 
         #endregion
 
         #region Constructors
 
-        public Repository(AccountEntities context)
+        public Repository(DbContext context)
         {
             this.context = context;
+
+            this.dbSet = context.Set<P>();
         }
 
         #endregion
@@ -37,183 +46,98 @@ namespace DAL.Repositories
         #region Public Api
 
         /// <summary>
-        /// Add new model in database.
-        /// First check exist account in database with the same number, if the same
-        /// throw new ExistInDatabaseException
-        /// Second check exist user in database, if exist write his id in 
-        /// field PersonalInfo and assign reference User null, else
-        /// add new user in database and write his id in field PersonalInfo and assign reference User in null.
-        /// Third check exist type in database and if exist write his id in 
-        /// field AccountType, else add new type in database and write his id 
-        /// in field AccountType assign reference Type in null.
-        /// Fourth add account in database.
+        /// Add new instance type T in database
         /// </summary>
         /// <param name="model">instance type T</param>
-        /// <returns>instance that add</returns>
-        public AccountDto Add(AccountDto model)
+        /// <returns>instance type T if operation was succesfully</returns>
+        public virtual T Add(T model)
         {
+            Check.NotNull(model);
+
             if (isDisposed)
                 throw new ObjectDisposedException($"Context {nameof(context)} is disposed");
 
-            if (model == null)
-                throw new ArgumentNullException($"Argument {nameof(model)} is null");
+            var modelForAdd = Mapper<T, P>.Map(model);
 
-            var searchAccount = context.Accounts.FirstOrDefault(item =>
-                item.NumberOfAccount.Equals(model.NumberOfAccount, StringComparison.CurrentCulture));
+            var resultAdd = dbSet.Add(modelForAdd);
 
-            if (searchAccount != null)
-                throw new ExistInDatabaseException($"Account {nameof(model)} already exist in database");
+            context.SaveChanges();
 
-            var accountModel = model.AccountDtoToAccontModel();
+            var resultDto = Mapper<P, T>.Map(resultAdd);
 
-            var searchUser = context.Users.FirstOrDefault(item => item.FirstName == accountModel.User.FirstName
-                && item.LastName == accountModel.User.LastName
-                && item.Email == accountModel.User.Email
-                && item.Passport == accountModel.User.Passport);
+            return resultDto;
+        }
 
-            if (searchUser != null)
-            {
-                accountModel.PersonalInfo = searchUser.Id;
-            }
-            else
-            {
-                var resultAddUser = context.Users.Add(accountModel.User);
-                context.SaveChanges();
-                accountModel.PersonalInfo = resultAddUser.Id;
-            }
+        /// <summary>
+        /// Delete instance type T from database
+        /// </summary>
+        /// <param name="model">instance type T</param>
+        /// <returns>instance type T if operation was succesfully</returns>
+        public virtual T Delete(T model)
+        {
+            Check.NotNull(model);
 
-            accountModel.User = null;
+            if (isDisposed)
+                throw new ObjectDisposedException($"Context {nameof(context)} is disposed");
 
-            var searchType = context.Types.FirstOrDefault(item => item.AccountType == accountModel.Type.AccountType);
+            var modelForDelete = Mapper<T, P>.Map(model);
 
-            if (searchType != null)
-            {
-                accountModel.AccountType = searchType.Id;
-            }
-            else
-            {
-                var resultAddType = context.Types.Add(accountModel.Type);
-                context.SaveChanges();
-                accountModel.AccountType = resultAddType.Id;
-            }
+            if (!dbSet.Any(item => item.Id == modelForDelete.Id))
+                throw new ExistInDatabaseException($"Instance {model} doesn`t exist in database");
 
-            accountModel.Type = null;
+            var resultDelete = dbSet.Remove(modelForDelete);
 
-            var resultAddAccount = context.Accounts.Add(accountModel);
+            context.SaveChanges();
 
-            if (resultAddAccount == null)
-                throw new InvalidOperationException($"Account {nameof(model)} does not add in database");
+            var resultDto = Mapper<P, T>.Map(resultDelete);
+
+            return resultDto;
+        }
+
+        /// <summary>
+        /// Get instance by id
+        /// </summary>
+        /// <param name="id">identificator instance</param>
+        /// <returns>instance type T</returns>
+        public virtual T Get(int id)
+        {
+            if(id <= 0)
+                throw new ArgumentOutOfRangeException($"Argument {id} have to be more than zero");
+
+            if (isDisposed)
+                throw new ObjectDisposedException($"Context {nameof(context)} is disposed");
+
+            var resultGet = dbSet.SingleOrDefault(item => item.Id == id);
+
+            var resultDto = Mapper<P, T>.Map(resultGet);
+
+            return resultDto;
+        }
+
+        /// <summary>
+        /// Update instance
+        /// </summary>
+        /// <param name="model">instance for update</param>
+        /// <returns>update instance type T if operation succesfully</returns>
+        public virtual T Update(T model)
+        {
+            Check.NotNull(model);
+
+            if (isDisposed)
+                throw new ObjectDisposedException($"Context {nameof(context)} is disposed");
+
+            var modelDbModel = dbSet.SingleOrDefault(item => item.Id == model.Id);
+
+            if(modelDbModel == null)
+                throw new ExistInDatabaseException($"Entity with id : {model.Id} is absent in database");
+
+            modelDbModel = Mapper<T, P>.MapToSelf(modelDbModel, model);
+
+            context.Entry(modelDbModel).State = EntityState.Modified;
 
             context.SaveChanges();
 
             return model;
-        }
-
-        /// <summary>
-        /// Delete instance from database
-        /// </summary>
-        /// <param name="model">instance for delete</param>
-        /// <returns>instance that delete</returns>
-        public AccountDto Delete(AccountDto model)
-        {
-            if (isDisposed)
-                throw new ObjectDisposedException($"Context {nameof(context)} is disposed");
-
-            if (model == null)
-                throw new ArgumentNullException($"Argument {nameof(model)} is null");
-
-            var accountModel = model.AccountDtoToAccontModel();
-
-            var searchModel = context.Accounts
-                .SingleOrDefault(item => item.NumberOfAccount == model.NumberOfAccount);
-
-            if (searchModel == null)
-                throw new ExistInDatabaseException($"Account with number {model.NumberOfAccount} is not exist in database");
-
-            context.Accounts.Remove(searchModel);
-
-            context.SaveChanges();
-
-            return model;
-        }
-
-        /// <summary>
-        /// Get account by number
-        /// </summary>
-        /// <param name="number">value number</param>
-        /// <returns>instance type AccountDto</returns>
-        public AccountDto Get(string number)
-        {
-            if (isDisposed)
-                throw new ObjectDisposedException($"Context {nameof(context)} is disposed");
-
-            var accountModel = context.Accounts.SingleOrDefault(item => item.NumberOfAccount == number);
-
-            var result = accountModel.AccontModelToAccountDto();
-
-            return result;
-        }
-
-        /// <summary>
-        /// Get all account from danabase
-        /// </summary>
-        /// <returns>account`s instances</returns>
-        public IEnumerable<AccountDto> GetAll()
-        {
-            if (isDisposed)
-                throw new ObjectDisposedException($"Context {nameof(context)} is disposed");
-
-            foreach (Account item in context.Accounts.Include("User"))
-            {
-                yield return item.AccontModelToAccountDto();
-            }
-        }
-
-        /// <summary>
-        /// Update account in database
-        /// </summary>
-        /// <param name="model">instance type AccountDto for update</param>
-        /// <returns>instance after update</returns>
-        public AccountDto Update(AccountDto model)
-        {
-            if (isDisposed)
-                throw new ObjectDisposedException($"Context {nameof(context)} is disposed");
-
-            if (model == null)
-                throw new ArgumentNullException($"Argument {nameof(model)} is null");
-
-            var accountFromDb = model.AccountDtoToAccontModel();
-
-            var accountForUpdate = context.Accounts.SingleOrDefault(item => item.NumberOfAccount == accountFromDb.NumberOfAccount);
-
-            accountForUpdate = accountForUpdate.AccountModelToAccontModel(accountFromDb);
-
-            context.Entry(accountForUpdate).State = EntityState.Modified;
-
-            context.SaveChanges();
-
-            return accountForUpdate.AccontModelToAccountDto();
-        }
-
-        /// <summary>
-        /// Get AccountDto by id
-        /// </summary>
-        /// <param name="id">identificator</param>
-        /// <returns>instance type AccountDto</returns>
-        public AccountDto Get(int id)
-        {
-            if (isDisposed)
-                throw new ObjectDisposedException($"Context {nameof(context)} is disposed");
-
-            if (id < 0)
-                throw new ArgumentNullException($"Argument {nameof(id)} is not valid");
-
-            var accountDto = context.Accounts.SingleOrDefault(item => item.Id == id);
-
-            if(accountDto == null)
-                throw new ExistInDatabaseException($"Account with id = {id} is absent in DataBase");
-
-            return accountDto.AccontModelToAccountDto();
         }
 
         #endregion

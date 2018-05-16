@@ -32,6 +32,9 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -43,14 +46,13 @@
     <Compile Include="Entities\Account.cs" />
     <Compile Include="Entities\BaseAccount.cs" />
     <Compile Include="Entities\GoldAccount.cs" />
-    <Compile Include="Entities\PersonalInfo.cs" />
+    <Compile Include="Entities\UserInfo.cs" />
     <Compile Include="Entities\PlatinumAccount.cs" />
     <Compile Include="Entities\SilverAccount.cs" />
     <Compile Include="Enum\AccountType.cs" />
     <Compile Include="Interfaces\IAccountNumberCreateService.cs" />
     <Compile Include="Interfaces\IAccountService.cs" />
     <Compile Include="Interfaces\IUserService.cs" />
-    <Compile Include="Interfaces\IVerifyPersonalInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -58,6 +60,9 @@
       <Project>{9501e6ea-aa42-46b3-b9aa-ee8aec8697c9}</Project>
       <Name>DAL.Interface</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

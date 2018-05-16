@@ -17,7 +17,7 @@ namespace BLL.Interface.Interfaces
 
         Account GetByNumber(string number);
 
-        Account OpenAccount(AccountType type, PersonalInfo info, IAccountNumberCreateService creator);
+        Account OpenAccount(AccountType type, int userId, IAccountNumberCreateService creator);
 
         decimal DepositAccount(Account account, decimal deposit);
 
@@ -25,6 +25,6 @@ namespace BLL.Interface.Interfaces
 
         bool Close(Account account);
 
-        bool Transfer(Account first, Account second, decimal transfer);
+        (Account, Account) Transfer(Account first, Account second, decimal transfer);
     }
 }

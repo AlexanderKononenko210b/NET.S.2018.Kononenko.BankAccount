@@ -5,8 +5,11 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DAL.Exceptions
+namespace BLL.Exceptions
 {
+    /// <summary>
+    /// Exceptions if exist or not exist in database data
+    /// </summary>
     [Serializable]
     public class ExistInDatabaseException : Exception
     {

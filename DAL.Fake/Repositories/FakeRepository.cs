@@ -1,105 +1,116 @@
-﻿//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using DAL.Fake.Exceptions;
-//using DAL.Interface.Interfaces;
-//using DAL.Interface.Dto;
-    
-//namespace DAL.Fake.Repositories
-//{
-//    /// <summary>
-//    /// Fake Account Repository
-//    /// </summary>
-//    public class FakeRepository : IRepository<AccountDto>
-//    {
-//        private List<AccountDto> list = new List<AccountDto>();
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using DAL.Fake.Exceptions;
+using DAL.Interface.DbModels;
+using DAL.Interface.Interfaces;
+using DAL.Interface.Dto;
 
-//        /// <summary>
-//        /// Get instance type Account by number
-//        /// </summary>
-//        /// <param name="number">number of Account</param>
-//        /// <returns>instance Account if exist in list</returns>
-//        public AccountDto Get(string number)
-//        {
-//            if(number == null)
-//                throw new ArgumentNullException($"Argument {nameof(number)} is null");
+namespace DAL.Fake.Repositories
+{
+    /// <summary>
+    /// Fake Account Repository
+    /// </summary>
+    public class FakeRepository : IRepository<AccountDto, AccountDbModel>
+    {
+        private List<AccountDto> list = new List<AccountDto>();
 
-//            var equalityComparer = EqualityComparer<string>.Default;
+        /// <summary>
+        /// Get instance type Account by number
+        /// </summary>
+        /// <param name="number">number of Account</param>
+        /// <returns>instance Account if exist in list</returns>
+        public AccountDto Get(string number)
+        {
+            if (number == null)
+                throw new ArgumentNullException($"Argument {nameof(number)} is null");
 
-//            return list.Find(item => equalityComparer.Equals(item.NumberOfAccount, number));
-//        }
+            var equalityComparer = EqualityComparer<string>.Default;
 
-//        /// <summary>
-//        /// Add model to list
-//        /// </summary>
-//        /// <param name="model">model</param>
-//        public AccountDto Add(AccountDto model)
-//        {
-//            if (model == null)
-//                throw new ArgumentNullException($"Argument {nameof(model)} is null");
+            return list.Find(item => equalityComparer.Equals(item.NumberOfAccount, number));
+        }
 
-//            if (this.Get(model.NumberOfAccount) != null)
-//                throw new ExistInDataBaseException($"Account {nameof(model)} already exist in repository");
+        /// <summary>
+        /// Add model to list
+        /// </summary>
+        /// <param name="model">model</param>
+        public AccountDto Add(AccountDto model)
+        {
+            if (model == null)
+                throw new ArgumentNullException($"Argument {nameof(model)} is null");
 
-//            list.Add(model);
+            if (this.Get(model.NumberOfAccount) != null)
+                throw new ExistInDataBaseException($"Account {nameof(model)} already exist in repository");
 
-//            return model;
-//        }
+            list.Add(model);
 
-//        /// <summary>
-//        /// Update Account in list
-//        /// </summary>
-//        /// <param name="model">model with update</param>
-//        /// <returns>Updated model</returns>
-//        public AccountDto Update(AccountDto model)
-//        {
-//            if (model == null)
-//                throw new ArgumentNullException($"Argument {nameof(model)} is null");
+            return model;
+        }
 
-//            AccountDto modelForUpdate = Get(model.NumberOfAccount);
+        /// <summary>
+        /// Update Account in list
+        /// </summary>
+        /// <param name="model">model with update</param>
+        /// <returns>Updated model</returns>
+        public AccountDto Update(AccountDto model)
+        {
+            if (model == null)
+                throw new ArgumentNullException($"Argument {nameof(model)} is null");
 
-//            if(modelForUpdate == null)
-//                throw new ExistInDataBaseException($"Account {nameof(model)} does not exist in repository");
+            AccountDto modelForUpdate = Get(model.NumberOfAccount);
 
-//            list.Remove(modelForUpdate);
+            if (modelForUpdate == null)
+                throw new ExistInDataBaseException($"Account {nameof(model)} does not exist in repository");
 
-//            list.Add(model);
+            list.Remove(modelForUpdate);
 
-//            return model;
-//        }
+            list.Add(model);
 
-//        /// <summary>
-//        /// delete model from list
-//        /// </summary>
-//        /// <param name="model">model for delete</param>
-//        /// <returns>instance that delete</returns>
-//        public AccountDto Delete(AccountDto model)
-//        {
-//            if (model == null)
-//                throw new ArgumentNullException($"Argument {nameof(model)} is null");
+            return model;
+        }
 
-//            AccountDto modelForDelete = Get(model.NumberOfAccount);
+        /// <summary>
+        /// delete model from list
+        /// </summary>
+        /// <param name="model">model for delete</param>
+        /// <returns>instance that delete</returns>
+        public AccountDto Delete(AccountDto model)
+        {
+            if (model == null)
+                throw new ArgumentNullException($"Argument {nameof(model)} is null");
 
-//            if (modelForDelete == null)
-//                throw new ExistInDataBaseException($"Account {nameof(model)} does not exist in repository");
+            AccountDto modelForDelete = Get(model.NumberOfAccount);
 
-//            list.Remove(modelForDelete);
+            if (modelForDelete == null)
+                throw new ExistInDataBaseException($"Account {nameof(model)} does not exist in repository");
 
-//            return model;
-//        }
+            list.Remove(modelForDelete);
 
-//        /// <summary>
-//        /// Block state for get all accounts in repository
-//        /// </summary>
-//        /// <returns></returns>
-//        public IEnumerable<AccountDto> GetAll()
-//        {
-//            return list;
-//        }
+            return model;
+        }
 
-//        public AccountDto Get(int id)
-//        {
-//            throw new NotImplementedException();
-//        }
-//    }
-//}
+        /// <summary>
+        /// Block state for get all accounts in repository
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<AccountDto> GetAll()
+        {
+            foreach (var item in list)
+                yield return item;
+        }
+
+        /// <summary>
+        /// Get AccountDto by id
+        /// </summary>
+        /// <param name="id">identificator instance AccountId</param>
+        /// <returns>instance AccountId or null if finding instance
+        /// is not exist in database</returns>
+        public AccountDto Get(int id)
+        {
+            if (id < 1)
+                throw new ArgumentNullException($"Argument {nameof(id)} is not valid");
+
+            return list.SingleOrDefault(item => item.Id == id);
+        }
+    }
+}

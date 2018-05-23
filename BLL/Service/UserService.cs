@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BLL.Exceptions;
 using BLL.Interface.Entities;
 using BLL.Interface.Interfaces;
 using BLL.Mappers;
@@ -21,13 +22,17 @@ namespace BLL.Service
 
         private IUnitOfWork unitOfWork;
 
+        private IUserRepository userRepository;
+
         #endregion
 
         #region Constructors
 
-        public UserService(IUnitOfWork unitOfWork)
+        public UserService(IUnitOfWork unitOfWork, IUserRepository userRepository)
         {
             this.unitOfWork = unitOfWork;
+
+            this.userRepository = userRepository;
         }
 
         #endregion
@@ -50,13 +55,31 @@ namespace BLL.Service
 
             var userForSave = Mapper<UserInfo, UserInfoDto>.Map(userInfo);
 
-            var userAfterSave = unitOfWork.UserRepository.Add(userForSave);
-
-            unitOfWork.Commit();
-
+            var userAfterSave = userRepository.Add(userForSave);
+            
             var userSave = Mapper<UserInfoDto, UserInfo>.Map(userAfterSave);
 
             return userSave;
+        }
+
+        /// <summary>
+        /// Get method instance type user
+        /// </summary>
+        /// <param name="id">identificator</param>
+        /// <returns>instance type UserInfo</returns>
+        public UserInfo Get(int id)
+        {
+            if (id <= 0)
+                throw new ArgumentOutOfRangeException($"Argument {id} is not valid");
+
+            var resultFind = userRepository.Get(id);
+
+            if(resultFind == null)
+                throw new ExistInDatabaseException($"User with with the same id is absent in database");
+
+            var user = Mapper<UserInfoDto, UserInfo>.Map(resultFind);
+
+            return user;
         }
 
         #endregion

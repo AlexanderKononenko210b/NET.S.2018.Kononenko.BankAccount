@@ -18,32 +18,20 @@ namespace DAL.Repositories
 
         private DbContext context;
 
-        private IAccountRepository accountRepository;
-
-        private IUserRepository userRepository;
-
         private bool isDisposed;
 
         #endregion
 
         #region Constructors
 
-        public UnitOfWork(DbContext context,
-            IAccountRepository accountRepository,
-            IUserRepository userRepository)
+        public UnitOfWork(DbContext context)
         {
             this.context = context;
-            this.accountRepository = accountRepository;
-            this.userRepository = userRepository;
         }
 
         #endregion
 
         #region Public Api
-
-        public IAccountRepository AccountRepository => accountRepository;
-
-        public IUserRepository UserRepository => userRepository;
 
         /// <summary>
         /// Method for call context`s method SaveChanges()
@@ -87,8 +75,6 @@ namespace DAL.Repositories
                 isDisposed = true;
 
                 Dispose(true);
-
-                GC.SuppressFinalize(this);
             }
         }
 
@@ -106,6 +92,11 @@ namespace DAL.Repositories
             context.Dispose();
 
             isDisposed = true;
+
+            if (disposing)
+            {
+                GC.SuppressFinalize(this);
+            }
         }
 
         #endregion

@@ -15,7 +15,7 @@ namespace ConsolePL
         static Program()
         {
             resolver = new StandardKernel();
-            resolver.ConfigurateResolver();
+            resolver.ConfigurateResolverConsole();
         }
 
         static void Main(string[] args)
@@ -24,7 +24,7 @@ namespace ConsolePL
             IUserService userService = resolver.Get<IUserService>();
             IAccountNumberCreateService creator = resolver.Get<IAccountNumberCreateService>();
 
-            Console.WriteLine("All in collection");
+            Console.WriteLine("All accounts in database");
             Console.WriteLine();
 
             foreach (var item in accountService.GetAll())
@@ -32,27 +32,39 @@ namespace ConsolePL
                 Console.WriteLine(item);
             }
 
+            Console.WriteLine();
+
             try
             {
-                //var person = userService.Create("Fedor", "Bondarchuk", "RT1234134", "bondarchuk@gmail.com");
+                #region Test add new account
 
-                //accountService.OpenAccount(AccountType.Base, person.Id, creator);
-                //accountService.OpenAccount(AccountType.Silver, person.Id, creator);
-                //accountService.OpenAccount(AccountType.Gold, person.Id, creator);
-                //accountService.OpenAccount(AccountType.Platinum, person.Id, creator);
+                var person = userService.Create("Fedor", "Bondarchuk", "RT1234134", "bondarchuk@gmail.com");
 
-                //Console.WriteLine("After add in collection");
-                //Console.WriteLine();
+                accountService.OpenAccount(AccountType.Base, person.Id, creator);
+                accountService.OpenAccount(AccountType.Silver, person.Id, creator);
+                accountService.OpenAccount(AccountType.Gold, person.Id, creator);
+                accountService.OpenAccount(AccountType.Platinum, person.Id, creator);
 
-                //foreach (var item in accountService.GetAll())
-                //{
-                //    Console.WriteLine(item);
-                //}
+                var person2 = userService.Create("Fedor", "Volkov", "RT1234134", "volkov@gmail.com");
+
+                accountService.OpenAccount(AccountType.Base, person2.Id, creator);
+                accountService.OpenAccount(AccountType.Silver, person2.Id, creator);
+                accountService.OpenAccount(AccountType.Gold, person2.Id, creator);
+                accountService.OpenAccount(AccountType.Platinum, person2.Id, creator);
+
+                Console.WriteLine("After add in collection");
+                Console.WriteLine();
+
+                foreach (var item in accountService.GetAll())
+                {
+                    Console.WriteLine(item);
+                }
+
+                #endregion
+
+                #region Test deposit and withdraw
 
                 var account = accountService.GetByNumber("40512100790000000004");
-
-                if (account == null)
-                    Console.WriteLine("Account is absent in database");
 
                 Console.WriteLine($"Befor withdraw Balance : {account.Balance}, BenefitPoints : {account.BenefitPoints}");
 
@@ -68,34 +80,28 @@ namespace ConsolePL
 
                 Console.WriteLine($"After deposite 200 Balance : {account.Balance}, BenefitPoints : {account.BenefitPoints}");
 
+                #endregion
 
-                foreach (var item in accountService.GetAll().ToList())
-                {
-                    accountService.DepositAccount(item, 100);
-                }
+                #region Test transfer
 
-                Console.WriteLine("After deposit 100");
+                var accountWithDrawTransfer = accountService.GetByNumber("40512100790000000003");
 
-                foreach (var item in accountService.GetAll())
-                {
-                    Console.WriteLine(item);
-                }
+                var accountDepositTransfer = accountService.GetByNumber("40512100790000000004");
 
-                foreach (var t in accountService.GetAll().ToList())
-                {
-                    accountService.WithDrawAccount(t, 100);
-                }
+                Console.WriteLine($"Before transfer balance account for withdraw {accountWithDrawTransfer.Balance}" +
+                                  $"account for deposit {accountDepositTransfer.Balance}");
 
-                Console.WriteLine("After withdraw 100");
+                var resultTransfer = accountService.Transfer(accountWithDrawTransfer, accountDepositTransfer, 50);
 
-                foreach (var item in accountService.GetAll())
-                {
-                    Console.WriteLine(item);
-                }
+                Console.WriteLine($"After transfer balance account for withdraw {resultTransfer.Item1.Balance}" +
+                                  $"account for deposit {resultTransfer.Item2.Balance}");
+
+                #endregion
+
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Console.WriteLine(e.Message);
             }
         }
     }

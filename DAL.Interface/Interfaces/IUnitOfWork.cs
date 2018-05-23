@@ -12,10 +12,6 @@ namespace DAL.Interface.Interfaces
     /// </summary>
     public interface IUnitOfWork
     {
-        IAccountRepository AccountRepository { get; }
-
-        IUserRepository UserRepository { get; }
-
         void Commit();
     }
 }

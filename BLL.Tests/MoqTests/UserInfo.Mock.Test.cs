@@ -81,15 +81,15 @@ namespace BLL.Tests.MoqTests
         [TestCase]
         public void Create_UserInfo_With_Valid_Data()
         {
-            this.mockUnitOfWork.Setup(item => item.UserRepository.Add(It.IsAny<UserInfoDto>()))
+            this.mockUserInfo.Setup(item => item.Add(It.IsAny<UserInfoDto>()))
                 .Returns(() => userInfoDto);
 
-            this.mockUnitOfWork.Setup(item => item.UserRepository.Get(It.IsAny<int>()))
+            this.mockUserInfo.Setup(item => item.Get(It.IsAny<int>()))
                 .Returns(() => userInfoDto);
 
             this.mockUnitOfWork.Setup(item => item.Commit());
 
-            var userService = new UserService(mockUnitOfWork.Object);
+            var userService = new UserService(mockUnitOfWork.Object, mockUserInfo.Object);
 
             var user = userService.Create("Fedor", "Bondarchuk", "RT1234136", "bondarchuk@gmail.com");
 
@@ -105,15 +105,15 @@ namespace BLL.Tests.MoqTests
         [TestCase]
         public void Create_UserInfo_If_Input_FirstName_Is_Null()
         {
-            this.mockUnitOfWork.Setup(item => item.UserRepository.Add(It.IsAny<UserInfoDto>()))
+            this.mockUserInfo.Setup(item => item.Add(It.IsAny<UserInfoDto>()))
                 .Returns(() => userInfoDto);
 
-            this.mockUnitOfWork.Setup(item => item.UserRepository.Get(It.IsAny<int>()))
+            this.mockUserInfo.Setup(item => item.Get(It.IsAny<int>()))
                 .Returns(() => userInfoDto);
 
             this.mockUnitOfWork.Setup(item => item.Commit());
 
-            var userService = new UserService(mockUnitOfWork.Object);
+            var userService = new UserService(mockUnitOfWork.Object, mockUserInfo.Object);
 
             Assert.Throws<ArgumentNullException>(() =>
                 userService.Create(null, "Bondarchuk", "RT1234136", "bondarchuk@gmail.com"));
@@ -125,15 +125,15 @@ namespace BLL.Tests.MoqTests
         [TestCase]
         public void Create_UserInfo_If_Input_FirstName_Is_Empty()
         {
-            this.mockUnitOfWork.Setup(item => item.UserRepository.Add(It.IsAny<UserInfoDto>()))
+            this.mockUserInfo.Setup(item => item.Add(It.IsAny<UserInfoDto>()))
                 .Returns(() => userInfoDto);
 
-            this.mockUnitOfWork.Setup(item => item.UserRepository.Get(It.IsAny<int>()))
+            this.mockUserInfo.Setup(item => item.Get(It.IsAny<int>()))
                 .Returns(() => userInfoDto);
 
             this.mockUnitOfWork.Setup(item => item.Commit());
 
-            var userService = new UserService(mockUnitOfWork.Object);
+            var userService = new UserService(mockUnitOfWork.Object, mockUserInfo.Object);
 
             Assert.Throws<ArgumentOutOfRangeException>(() =>
                 userService.Create("", "Bondarchuk", "RT1234136", "bondarchuk@gmail.com"));
@@ -145,15 +145,15 @@ namespace BLL.Tests.MoqTests
         [TestCase]
         public void Create_UserInfo_If_Input_FirstName_Is_WhiteSpace()
         {
-            this.mockUnitOfWork.Setup(item => item.UserRepository.Add(It.IsAny<UserInfoDto>()))
+            this.mockUserInfo.Setup(item => item.Add(It.IsAny<UserInfoDto>()))
                 .Returns(() => userInfoDto);
 
-            this.mockUnitOfWork.Setup(item => item.UserRepository.Get(It.IsAny<int>()))
+            this.mockUserInfo.Setup(item => item.Get(It.IsAny<int>()))
                 .Returns(() => userInfoDto);
 
             this.mockUnitOfWork.Setup(item => item.Commit());
 
-            var userService = new UserService(mockUnitOfWork.Object);
+            var userService = new UserService(mockUnitOfWork.Object, mockUserInfo.Object);
 
             Assert.Throws<ArgumentOutOfRangeException>(() =>
                 userService.Create(" ", "Bondarchuk", "RT1234136", "bondarchuk@gmail.com"));
@@ -165,15 +165,15 @@ namespace BLL.Tests.MoqTests
         [TestCase]
         public void Create_UserInfo_If_Input_FirstName_Is_Not_According_BLL_Rule()
         {
-            this.mockUnitOfWork.Setup(item => item.UserRepository.Add(It.IsAny<UserInfoDto>()))
+            this.mockUserInfo.Setup(item => item.Add(It.IsAny<UserInfoDto>()))
                 .Returns(() => userInfoDto);
 
-            this.mockUnitOfWork.Setup(item => item.UserRepository.Get(It.IsAny<int>()))
+            this.mockUserInfo.Setup(item => item.Get(It.IsAny<int>()))
                 .Returns(() => userInfoDto);
 
             this.mockUnitOfWork.Setup(item => item.Commit());
 
-            var userService = new UserService(mockUnitOfWork.Object);
+            var userService = new UserService(mockUnitOfWork.Object, mockUserInfo.Object);
 
             Assert.Throws<ArgumentOutOfRangeException>(() =>
                 userService.Create("1234", "Bondarchuk", "RT1234136", "bondarchuk@gmail.com"));
@@ -185,15 +185,15 @@ namespace BLL.Tests.MoqTests
         [TestCase]
         public void Create_UserInfo_If_Input_LastName_Is_Not_According_BLL_Rule()
         {
-            this.mockUnitOfWork.Setup(item => item.UserRepository.Add(It.IsAny<UserInfoDto>()))
+            this.mockUserInfo.Setup(item => item.Add(It.IsAny<UserInfoDto>()))
                 .Returns(() => userInfoDto);
 
-            this.mockUnitOfWork.Setup(item => item.UserRepository.Get(It.IsAny<int>()))
+            this.mockUserInfo.Setup(item => item.Get(It.IsAny<int>()))
                 .Returns(() => userInfoDto);
 
             this.mockUnitOfWork.Setup(item => item.Commit());
 
-            var userService = new UserService(mockUnitOfWork.Object);
+            var userService = new UserService(mockUnitOfWork.Object, mockUserInfo.Object);
 
             Assert.Throws<ArgumentOutOfRangeException>(() =>
                 userService.Create("Fedor", "bondarchuk", "RT1234136", "bondarchuk@gmail.com"));
@@ -205,15 +205,15 @@ namespace BLL.Tests.MoqTests
         [TestCase]
         public void Create_UserInfo_If_Input_Pasport_Number_Is_Not_According_BLL_Rule()
         {
-            this.mockUnitOfWork.Setup(item => item.UserRepository.Add(It.IsAny<UserInfoDto>()))
+            this.mockUserInfo.Setup(item => item.Add(It.IsAny<UserInfoDto>()))
                 .Returns(() => userInfoDto);
 
-            this.mockUnitOfWork.Setup(item => item.UserRepository.Get(It.IsAny<int>()))
+            this.mockUserInfo.Setup(item => item.Get(It.IsAny<int>()))
                 .Returns(() => userInfoDto);
 
             this.mockUnitOfWork.Setup(item => item.Commit());
 
-            var userService = new UserService(mockUnitOfWork.Object);
+            var userService = new UserService(mockUnitOfWork.Object, mockUserInfo.Object);
 
             Assert.Throws<ArgumentOutOfRangeException>(() =>
                 userService.Create("Fedor", "bondarchuk", "RT12341", "bondarchuk@gmail.com"));
@@ -225,15 +225,15 @@ namespace BLL.Tests.MoqTests
         [TestCase]
         public void Create_UserInfo_If_Input_Email_Is_Not_According_BLL_Rule()
         {
-            this.mockUnitOfWork.Setup(item => item.UserRepository.Add(It.IsAny<UserInfoDto>()))
+            this.mockUserInfo.Setup(item => item.Add(It.IsAny<UserInfoDto>()))
                 .Returns(() => userInfoDto);
 
-            this.mockUnitOfWork.Setup(item => item.UserRepository.Get(It.IsAny<int>()))
+            this.mockUserInfo.Setup(item => item.Get(It.IsAny<int>()))
                 .Returns(() => userInfoDto);
 
             this.mockUnitOfWork.Setup(item => item.Commit());
 
-            var userService = new UserService(mockUnitOfWork.Object);
+            var userService = new UserService(mockUnitOfWork.Object, mockUserInfo.Object);
 
             Assert.Throws<ArgumentOutOfRangeException>(() =>
                 userService.Create("Fedor", "bondarchuk", "RT1234136", "bondarchukgmail.com"));

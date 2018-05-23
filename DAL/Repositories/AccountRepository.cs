@@ -20,21 +20,10 @@ namespace DAL.Repositories
     /// </summary>
     public class AccountRepository : Repository<AccountDto, AccountDbModel>, IAccountRepository
     {
-        #region Fields
-
-        private readonly AccountContext context;
-
-        private bool isDisposed;
-
-        #endregion
-
         #region Constructors
 
-        public AccountRepository(AccountContext context)
-            : base(context)
-        {
-            this.context = context;
-        }
+        public AccountRepository(DbContext context)
+            : base(context){ }
 
         #endregion
 
@@ -47,10 +36,13 @@ namespace DAL.Repositories
         /// <returns>instance type AccountDto</returns>
         public AccountDto Get(string number)
         {
-            if (isDisposed)
+            if (this.isDisposed)
                 throw new ObjectDisposedException($"Context {nameof(context)} is disposed");
 
-            var accountModel = context.Set<AccountDbModel>().SingleOrDefault(item => item.NumberOfAccount == number);
+            var accountModel = this.dbSet.SingleOrDefault(item => item.NumberOfAccount == number);
+
+            if (accountModel == null)
+                throw new ExistInDatabaseException($"Account with the same number {number} is abset in database");
 
             var resultGet = Mapper<AccountDbModel, AccountDto>.Map(accountModel);
 
@@ -63,10 +55,10 @@ namespace DAL.Repositories
         /// <returns>account`s instances</returns>
         public IEnumerable<AccountDto> GetAll()
         {
-            if (isDisposed)
+            if (this.isDisposed)
                 throw new ObjectDisposedException($"Context {nameof(context)} is disposed");
 
-            foreach (AccountDbModel item in context.Set<AccountDbModel>().AsNoTracking())
+            foreach (AccountDbModel item in this.dbSet.AsNoTracking())
             {
                 yield return Mapper<AccountDbModel, AccountDto>.Map(item);
             }
@@ -79,44 +71,26 @@ namespace DAL.Repositories
         /// <returns></returns>
         public override AccountDto Add(AccountDto account)
         {
-            Check.NotNull(account);
-
-            if (isDisposed)
+            if (this.isDisposed)
                 throw new ObjectDisposedException($"Context {nameof(context)} is disposed");
+
+            Check.NotNull(account);
 
             var accountForAdd = Mapper<AccountDto, AccountDbModel>.Map(account);
 
-            var accountFind = context.Accounts.SingleOrDefault(item => item.NumberOfAccount
+            var accountFind = this.dbSet.SingleOrDefault(item => item.NumberOfAccount
                 .Equals(accountForAdd.NumberOfAccount, StringComparison.CurrentCulture));
 
             if (accountFind != null)
-                throw new ExistInDatabaseException($"Account with the same number " +
-                                                   $"{accountForAdd.NumberOfAccount} already exist in database");
+                throw new ExistInDatabaseException($"Account with the same number {accountForAdd.NumberOfAccount} already exist in database");
 
-            var resultAdd = context.Accounts.Add(accountForAdd);
+            var resultAdd = this.dbSet.Add(accountForAdd);
 
-            context.SaveChanges();
+            this.context.SaveChanges();
 
             var resultDto = Mapper<AccountDbModel, AccountDto>.Map(resultAdd);
 
             return resultDto;
-        }
-
-        #endregion
-
-        #region Disposable
-
-        /// <summary>
-        /// If unmanage resources are not release (isDisposed = false)
-        /// set isDisposed in true and call method Dispose with false parameter
-        /// </summary>
-        ~AccountRepository()
-        {
-            if (!isDisposed)
-            {
-                isDisposed = true;
-                base.Dispose(false);
-            }
         }
 
         #endregion

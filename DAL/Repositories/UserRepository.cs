@@ -19,36 +19,22 @@ namespace DAL.Repositories
     /// </summary>
     public class UserRepository : Repository<UserInfoDto, UserInfoDbModel>, IUserRepository
     {
-        #region Fields
-
-        private readonly AccountContext context;
-
-        private bool isDisposed;
-
-        #endregion
-
         #region Constructors
 
-        public UserRepository(AccountContext context)
-            : base(context)
-        {
-            this.context = context;
-        }
+        public UserRepository(DbContext context)
+            : base(context) { }
 
         #endregion
 
         #region Public Api
 
         /// <summary>
-        /// Get all account from danabase
+        /// Get all account from database
         /// </summary>
         /// <returns>account`s instances</returns>
         public IEnumerable<UserInfoDto> GetAll()
         {
-            if (isDisposed)
-                throw new ObjectDisposedException($"Context {nameof(context)} is disposed");
-
-            foreach (UserInfoDbModel item in context.Set<UserInfoDbModel>())
+            foreach (UserInfoDbModel item in this.dbSet.AsNoTracking())
             {
                 yield return Mapper<UserInfoDbModel, UserInfoDto>.Map(item);
             }
@@ -63,21 +49,18 @@ namespace DAL.Repositories
         {
             Check.NotNull(user);
 
-            if (isDisposed)
-                throw new ObjectDisposedException($"Context {nameof(user)} is disposed");
-
             var userForAdd = Mapper<UserInfoDto, UserInfoDbModel>.Map(user);
 
-            var resultFind = context.Users.SingleOrDefault(item => item.FirstName == userForAdd.FirstName
+            var resultFind = this.dbSet.SingleOrDefault(item => item.FirstName == userForAdd.FirstName
                                                      && item.LastName == userForAdd.LastName
                                                      && item.Passport == userForAdd.Passport
                                                      && item.Email == userForAdd.Email);
 
             if (resultFind == null)
             {
-                var resultAdd = context.Users.Add(userForAdd);
+                var resultAdd = this.dbSet.Add(userForAdd);
 
-                context.SaveChanges();
+                this.context.SaveChanges();
 
                 var resultDto = Mapper<UserInfoDbModel, UserInfoDto>.Map(resultAdd);
 
@@ -85,23 +68,6 @@ namespace DAL.Repositories
             }
 
             return Mapper<UserInfoDbModel, UserInfoDto>.Map(resultFind);
-        }
-
-        #endregion
-
-        #region Disposable
-
-        /// <summary>
-        /// If unmanage resources are not release (isDisposed = false)
-        /// set isDisposed in true and call method Dispose with false parameter
-        /// </summary>
-        ~UserRepository()
-        {
-            if (!isDisposed)
-            {
-                isDisposed = true;
-                base.Dispose(false);
-            }
         }
 
         #endregion

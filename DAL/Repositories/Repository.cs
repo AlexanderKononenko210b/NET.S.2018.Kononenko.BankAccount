@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using DAL.Context;
 using DAL.Exceptions;
 using DAL.Interface.DbModels;
 using DAL.Interface.Interfaces;
@@ -24,11 +25,11 @@ namespace DAL.Repositories
     {
         #region Fields
 
-        private bool isDisposed;
+        protected bool isDisposed;
 
-        private readonly DbContext context;
+        protected readonly DbContext context;
 
-        private readonly IDbSet<P> dbSet;
+        protected readonly IDbSet<P> dbSet;
 
         #endregion
 
@@ -54,14 +55,9 @@ namespace DAL.Repositories
         {
             Check.NotNull(model);
 
-            if (isDisposed)
-                throw new ObjectDisposedException($"Context {nameof(context)} is disposed");
-
             var modelForAdd = Mapper<T, P>.Map(model);
 
             var resultAdd = dbSet.Add(modelForAdd);
-
-            context.SaveChanges();
 
             var resultDto = Mapper<P, T>.Map(resultAdd);
 
@@ -77,17 +73,14 @@ namespace DAL.Repositories
         {
             Check.NotNull(model);
 
-            if (isDisposed)
-                throw new ObjectDisposedException($"Context {nameof(context)} is disposed");
-
             var modelForDelete = Mapper<T, P>.Map(model);
 
-            if (!dbSet.Any(item => item.Id == modelForDelete.Id))
+            var modelFind = dbSet.Any(item => item.Id == modelForDelete.Id);
+
+            if (!modelFind)
                 throw new ExistInDatabaseException($"Instance {model} doesn`t exist in database");
 
             var resultDelete = dbSet.Remove(modelForDelete);
-
-            context.SaveChanges();
 
             var resultDto = Mapper<P, T>.Map(resultDelete);
 
@@ -104,10 +97,10 @@ namespace DAL.Repositories
             if(id <= 0)
                 throw new ArgumentOutOfRangeException($"Argument {id} have to be more than zero");
 
-            if (isDisposed)
-                throw new ObjectDisposedException($"Context {nameof(context)} is disposed");
-
             var resultGet = dbSet.SingleOrDefault(item => item.Id == id);
+
+            if(resultGet == null)
+                throw new ExistInDatabaseException($"Instance with id {id} doesn`t exist in database");
 
             var resultDto = Mapper<P, T>.Map(resultGet);
 
@@ -123,9 +116,6 @@ namespace DAL.Repositories
         {
             Check.NotNull(model);
 
-            if (isDisposed)
-                throw new ObjectDisposedException($"Context {nameof(context)} is disposed");
-
             var modelDbModel = dbSet.SingleOrDefault(item => item.Id == model.Id);
 
             if(modelDbModel == null)
@@ -134,8 +124,6 @@ namespace DAL.Repositories
             modelDbModel = Mapper<T, P>.MapToSelf(modelDbModel, model);
 
             context.Entry(modelDbModel).State = EntityState.Modified;
-
-            context.SaveChanges();
 
             return model;
         }
@@ -186,6 +174,11 @@ namespace DAL.Repositories
             context.Dispose();
 
             isDisposed = true;
+
+            if (disposing)
+            {
+                GC.SuppressFinalize(this);
+            }
         }
 
         #endregion

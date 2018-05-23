@@ -25,13 +25,22 @@ namespace BLL.Service
 
         private IUnitOfWork unitOfWork;
 
+        private IAccountRepository accountRepository;
+
+        private IUserService userService;
+
         #endregion
 
         #region Constructors
 
-        public AccountService(IUnitOfWork unitOfWork )
+        public AccountService(IUnitOfWork unitOfWork, IAccountRepository  accountRepository,
+            IUserService userService)
         {
             this.unitOfWork = unitOfWork;
+
+            this.accountRepository = accountRepository;
+
+            this.userService = userService;
         }
 
         #endregion
@@ -49,7 +58,7 @@ namespace BLL.Service
         {
             Check.NotNull(creator);
 
-            var user = unitOfWork.UserRepository.Get(userId);
+            var user = userService.Get(userId);
 
             if (user == null)
                 throw new ExistInDatabaseException($"User with Id : {userId} is not exist in database");
@@ -58,12 +67,10 @@ namespace BLL.Service
 
             var accountDto = Mapper<Account, AccountDto>.Map(account);
 
-            var result = unitOfWork.AccountRepository.Add(accountDto);
+            var result = accountRepository.Add(accountDto);
 
             if (result == null)
                 throw new InvalidOperationException($"Add new AccountDto is not valid");
-
-            unitOfWork.Commit();
 
             return Mapper<AccountDto, Account>.Map(result);
         }
@@ -89,14 +96,14 @@ namespace BLL.Service
 
             var firstDto = Mapper<Account, AccountDto>.Map(first);
 
-            var resultDeposit = unitOfWork.AccountRepository.Update(firstDto);
+            var resultDeposit = accountRepository.Update(firstDto);
 
             if (resultDeposit == null || resultDeposit.Balance != first.Balance)
                 throw new InvalidOperationException($"Update after withdraw in transfer between two Accounts is not valid");
 
             var secondDto = Mapper<Account, AccountDto>.Map(second);
 
-            var resultWithDraw = unitOfWork.AccountRepository.Update(secondDto);
+            var resultWithDraw = accountRepository.Update(secondDto);
 
             if (resultWithDraw == null || resultWithDraw.Balance != second.Balance)
                 throw new InvalidOperationException($"Update after deposit in transfer between two Accounts is not valid");
@@ -121,7 +128,7 @@ namespace BLL.Service
 
             var accountDto = Mapper<Account, AccountDto>.Map(account);
 
-            var result = unitOfWork.AccountRepository.Update(accountDto);
+            var result = accountRepository.Update(accountDto);
 
             if (result == null || result.IsClosed != account.IsClosed)
                 throw new InvalidOperationException($"Update after Close Account is not valid");
@@ -144,7 +151,7 @@ namespace BLL.Service
 
             var accountDto = Mapper<Account, AccountDto>.Map(account);
 
-            var resultSave = unitOfWork.AccountRepository.Update(accountDto);
+            var resultSave = accountRepository.Update(accountDto);
 
             if (resultSave == null || resultSave.Balance != account.Balance)
                 throw new InvalidOperationException($"Update after Diposit Account is not valid");
@@ -170,7 +177,7 @@ namespace BLL.Service
 
             var accountDto = Mapper<Account, AccountDto>.Map(account);
 
-            var resultSave = unitOfWork.AccountRepository.Update(accountDto);
+            var resultSave = accountRepository.Update(accountDto);
 
             if (resultSave == null || resultSave.Balance != account.Balance)
                 throw new InvalidOperationException($"Update after WithDraw Account is not valid");
@@ -186,7 +193,7 @@ namespace BLL.Service
         /// <returns></returns>
         public IEnumerable<Account> GetAll()
         {
-            foreach (var item in unitOfWork.AccountRepository.GetAll())
+            foreach (var item in accountRepository.GetAll())
             {
                 yield return Mapper<AccountDto, Account>.Map(item);
             }
@@ -201,7 +208,7 @@ namespace BLL.Service
             if (number == null)
                 throw new ArgumentNullException($"Argument {nameof(number)} is null");
 
-            var accountDto = unitOfWork.AccountRepository.Get(number);
+            var accountDto = accountRepository.Get(number);
 
             var account = Mapper<AccountDto, Account>.Map(accountDto);
 

@@ -23,14 +23,8 @@ namespace MvcPL.Controllers
 
             IAccountService accountService = resolver.Get<IAccountService>();
 
-            var accounts = accountService.GetAll();
-
-            var result = new List<AccountViewModel>();
-
-            foreach (var item in accounts)
-            {
-                result.Add(Mapper<AccountViewDto, AccountViewModel>.MapView(item));
-            }
+            var result = Mapper<IEnumerable<AccountViewDto>, IEnumerable<AccountViewModel>>
+                .MapView(accountService.GetAll());
 
             return View(result);
         }

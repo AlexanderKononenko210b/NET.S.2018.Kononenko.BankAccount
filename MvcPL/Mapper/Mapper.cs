@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Web;
 using BLL.Interface.Dto;
@@ -29,9 +30,45 @@ namespace MvcPL.Mapper
             return MapView((dynamic)source);
         }
 
+        /// <summary>
+        /// Mapping source from type IEnumerable<TSource></TSource> to type IEnumerable<Toutput></Toutput>
+        /// </summary>
+        /// <param name="source">instance source for mapping</param>
+        /// <returns>instance result mapping</returns>
+        public static IEnumerable<TOutput> MapView(IEnumerable<TSourse> source)
+        {
+            Check.NotNull((dynamic)source);
 
+            return MapView((dynamic)source);
+        }
 
         #endregion
+
+        /// <summary>
+        /// Mapper from IEnumerable<AccountViewDto></AccountViewDto> to IEnumerable<AccountViewModel></AccountViewModel>
+        /// </summary>
+        /// <param name="accountViewDto">instance AccountDto</param>
+        /// <returns></returns>
+        private static IEnumerable<AccountViewModel> MapView(IEnumerable<AccountViewDto> accountViewDto)
+        {
+            Check.NotNull(accountViewDto);
+
+            foreach (var item in accountViewDto)
+            {
+                var accountViewModel = new AccountViewModel
+                {
+                    Id = item.Id,
+                    AccountType = item.AccountType,
+                    Balance = item.Balance,
+                    BenefitPoints = item.BenefitPoints,
+                    IsClosed = item.IsClosed,
+                    NumberOfAccount = item.NumberOfAccount,
+                    UserId = item.UserId
+                };
+
+                yield return accountViewModel;
+            }
+        }
 
         #region Private methods
 

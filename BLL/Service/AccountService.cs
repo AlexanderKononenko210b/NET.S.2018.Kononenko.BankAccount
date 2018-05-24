@@ -194,8 +194,6 @@ namespace BLL.Service
         /// <returns></returns>
         public IEnumerable<AccountViewDto> GetAll()
         {
-
-
             foreach (var item in accountRepository.GetAll())
             {
                 var account = Mapper<AccountDto, Account>.Map(item);

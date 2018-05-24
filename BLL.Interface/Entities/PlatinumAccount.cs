@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BLL.Interface.Dto;
 using BLL.Interface.Enum;
 using BLL.Interface.Interfaces;
 using DAL.Interface.Dto;
@@ -32,6 +33,9 @@ namespace BLL.Interface.Entities
 
         internal PlatinumAccount(AccountDto accountDto)
             : base(accountDto) { }
+
+        internal PlatinumAccount(AccountViewDto accountViewDto)
+            : base(accountViewDto) { }
 
         internal PlatinumAccount(int userId, IAccountNumberCreateService creator)
             : base(userId, creator) { }

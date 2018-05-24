@@ -57,6 +57,7 @@
     <Compile Include="DbModelConfigurations\AccountConfiguration.cs" />
     <Compile Include="DbModelConfigurations\AccountTypeDbModelConfiguration.cs" />
     <Compile Include="DbModelConfigurations\UserInfoConfiguration.cs" />
+    <Compile Include="Exceptions\InvalidInputDataException.cs" />
     <Compile Include="Initializers\DatabaseInitializer.cs" />
     <Compile Include="Exceptions\ExistInDatabaseException.cs" />
     <Compile Include="Mappers\Mapper.cs" />

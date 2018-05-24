@@ -43,6 +43,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dto\AccountViewDto.cs" />
+    <Compile Include="Dto\UserViewDto.cs" />
     <Compile Include="Entities\Account.cs" />
     <Compile Include="Entities\BaseAccount.cs" />
     <Compile Include="Entities\GoldAccount.cs" />

@@ -25,6 +25,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		CodeMap1.dgml = CodeMap1.dgml
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MvcPL", "MvcPL\MvcPL.csproj", "{EEF6957A-FAC8-4401-BDC6-797E8C595528}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{8E4E34D9-4F24-449D-AC2B-85FF8B0ABB44}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8E4E34D9-4F24-449D-AC2B-85FF8B0ABB44}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8E4E34D9-4F24-449D-AC2B-85FF8B0ABB44}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EEF6957A-FAC8-4401-BDC6-797E8C595528}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EEF6957A-FAC8-4401-BDC6-797E8C595528}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EEF6957A-FAC8-4401-BDC6-797E8C595528}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EEF6957A-FAC8-4401-BDC6-797E8C595528}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

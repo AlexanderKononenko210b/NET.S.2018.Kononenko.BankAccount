@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BLL.Interface.Dto;
 using BLL.Interface.Entities;
 using BLL.Interface.Enum;
 using BLL.Interface.Interfaces;
@@ -57,6 +59,43 @@ namespace BLL.Factories
                     return new PlatinumAccount(accountDto);
                 default:
                     throw new InvalidOperationException($"Unknown type {accountDto} for create account");
+            }
+        }
+
+        /// <summary>
+        /// Create instance on AccountDto information
+        /// </summary>
+        /// <param name="accountDto">AccountDto instance</param>
+        /// <returns>new instance type Account</returns>
+        public static Account Create(AccountViewDto accountViewDto)
+        {
+            AccountType type;
+
+            try
+            {
+                type = (AccountType) Enum.Parse(typeof(AccountType), accountViewDto.AccountType);
+            }
+            catch (ArgumentException e)
+            {
+                throw new InvalidDataException(e.Message);
+            }
+            catch (OverflowException e)
+            {
+                throw new InvalidDataException(e.Message);
+            }
+            
+            switch (type)
+            {
+                case AccountType.Base:
+                    return new BaseAccount(accountViewDto);
+                case AccountType.Silver:
+                    return new SilverAccount(accountViewDto);
+                case AccountType.Gold:
+                    return new GoldAccount(accountViewDto);
+                case AccountType.Platinum:
+                    return new PlatinumAccount(accountViewDto);
+                default:
+                    throw new InvalidOperationException($"Unknown type {accountViewDto} for create account");
             }
         }
 

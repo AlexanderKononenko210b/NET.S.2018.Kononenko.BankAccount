@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BLL.Exceptions;
 using BLL.Factories;
+using BLL.Interface.Dto;
 using BLL.Interface.Entities;
 using BLL.Interface.Enum;
 using BLL.Interface.Interfaces;
@@ -191,11 +192,16 @@ namespace BLL.Service
         /// Get all accounts in repository
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<Account> GetAll()
+        public IEnumerable<AccountViewDto> GetAll()
         {
+
+
             foreach (var item in accountRepository.GetAll())
             {
-                yield return Mapper<AccountDto, Account>.Map(item);
+                var account = Mapper<AccountDto, Account>.Map(item);
+
+                yield return Mapper<Account, AccountViewDto>
+                    .MapView(account);
             }
         }
 

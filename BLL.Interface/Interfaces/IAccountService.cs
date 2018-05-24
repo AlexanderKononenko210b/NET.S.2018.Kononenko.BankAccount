@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BLL.Interface.Dto;
 using BLL.Interface.Entities;
 using BLL.Interface.Enum;
 
@@ -13,7 +14,7 @@ namespace BLL.Interface.Interfaces
     /// </summary>
     public interface IAccountService
     {
-        IEnumerable<Account> GetAll();
+        IEnumerable<AccountViewDto> GetAll();
 
         Account GetByNumber(string number);
 

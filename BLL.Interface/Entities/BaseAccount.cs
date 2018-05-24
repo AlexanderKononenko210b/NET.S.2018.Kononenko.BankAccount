@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BLL.Interface.Dto;
 using BLL.Interface.Enum;
 using BLL.Interface.Interfaces;
 using DAL.Interface.Dto;
@@ -32,6 +33,9 @@ namespace BLL.Interface.Entities
 
         internal BaseAccount(AccountDto accountDto)
             : base(accountDto) { }
+
+        internal BaseAccount(AccountViewDto accountViewDto)
+            : base(accountViewDto) { }
 
         internal BaseAccount(int userId, IAccountNumberCreateService creator)
             : base(userId, creator) { }

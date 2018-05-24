@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BLL.Interface.Dto;
 using BLL.Interface.Enum;
 using BLL.Interface.Interfaces;
 using DAL.Interface.Dto;
@@ -72,6 +73,25 @@ namespace BLL.Interface.Entities
             this.IsClosed = accountDto.IsClosed;
 
             this.UserId = accountDto.UserId;
+        }
+
+        /// <summary>
+        /// Create instance type account from accountViewDto
+        /// </summary>
+        /// <param name="accountViewDto"></param>
+        internal Account(AccountViewDto accountViewDto)
+        {
+            this.Id = accountViewDto.Id;
+
+            this.NumberOfAccount = accountViewDto.NumberOfAccount;
+
+            this.Balance = accountViewDto.Balance;
+
+            this.BenefitPoints = accountViewDto.BenefitPoints;
+
+            this.IsClosed = accountViewDto.IsClosed;
+
+            this.UserId = accountViewDto.UserId;
         }
 
         #endregion

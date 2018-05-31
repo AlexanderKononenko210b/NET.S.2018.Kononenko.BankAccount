@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -58,7 +59,7 @@ namespace DAL.Repositories
             if (this.isDisposed)
                 throw new ObjectDisposedException($"Context {nameof(context)} is disposed");
 
-            foreach (AccountDbModel item in this.dbSet.AsNoTracking())
+            foreach (AccountDbModel item in this.dbSet.Where(item => item.IsClosed == false).AsNoTracking())
             {
                 yield return Mapper<AccountDbModel, AccountDto>.Map(item);
             }
@@ -78,19 +79,33 @@ namespace DAL.Repositories
 
             var accountForAdd = Mapper<AccountDto, AccountDbModel>.Map(account);
 
-            var accountFind = this.dbSet.SingleOrDefault(item => item.NumberOfAccount
-                .Equals(accountForAdd.NumberOfAccount, StringComparison.CurrentCulture));
+            var accountFind = this.dbSet.SingleOrDefault(item => item.NumberOfAccount.Equals(accountForAdd.NumberOfAccount, StringComparison.CurrentCulture));
 
             if (accountFind != null)
                 throw new ExistInDatabaseException($"Account with the same number {accountForAdd.NumberOfAccount} already exist in database");
 
             var resultAdd = this.dbSet.Add(accountForAdd);
 
-            this.context.SaveChanges();
+            this.Commit();
 
             var resultDto = Mapper<AccountDbModel, AccountDto>.Map(resultAdd);
 
             return resultDto;
+        }
+
+        /// <summary>
+        /// Get all accounts number for specify userId
+        /// </summary>
+        /// <param name="userId">user</param>
+        /// <returns></returns>
+        public IEnumerable<string> GetNumbers(int userId)
+        {
+            if (this.isDisposed)
+                throw new ObjectDisposedException($"Context {nameof(context)} is disposed");
+
+            var numbers = this.dbSet.Where(item => item.UserId == userId).Select(item => item.NumberOfAccount);
+
+            return numbers;
         }
 
         #endregion

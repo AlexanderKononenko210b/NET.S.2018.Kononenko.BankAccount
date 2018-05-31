@@ -186,7 +186,14 @@ namespace BLL.Interface.Entities
         {
             this.Balance -= withdraw;
 
-            CalculateBenefitWithDraw(withdraw);
+            if (this.Balance == 0)
+            {
+                this.BenefitPoints = 0;
+            }
+            else
+            {
+                CalculateBenefitWithDraw(withdraw);
+            }
 
             return this.Balance;
         }

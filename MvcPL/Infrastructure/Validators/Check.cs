@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace MvcPL.Validators
+namespace MvcPL.Infrastructure.Validators
 {
     /// <summary>
     /// Static class for check condition

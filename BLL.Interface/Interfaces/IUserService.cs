@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BLL.Interface.Dto;
 using BLL.Interface.Entities;
 
 namespace BLL.Interface.Interfaces
@@ -14,6 +15,6 @@ namespace BLL.Interface.Interfaces
     {
         UserInfo Create(string firstName, string lastName, string passport, string email);
 
-        UserInfo Get(int id);
+        UserViewDto Get(int id);
     }
 }

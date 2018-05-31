@@ -112,5 +112,10 @@ namespace DAL.Fake.Repositories
 
             return list.SingleOrDefault(item => item.Id == id);
         }
+
+        public void Commit()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

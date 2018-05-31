@@ -60,7 +60,7 @@ namespace DAL.Repositories
             {
                 var resultAdd = this.dbSet.Add(userForAdd);
 
-                this.context.SaveChanges();
+                this.Commit();
 
                 var resultDto = Mapper<UserInfoDbModel, UserInfoDto>.Map(resultAdd);
 

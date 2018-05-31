@@ -1,0 +1,17 @@
+﻿
+@{
+    ViewBag.Title = "СonfirmationClose";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>СonfirmationClose</h2>
+
+@using (Html.BeginForm())
+{
+    <h4>Attention! Closing the account will lead to the impossibility 
+        of using it in the future! If you want to continue, click the "Close" 
+        or "Cansel" button to cancel the action.</h4>
+
+    <input type="submit" name="Close" value="Close account"/>
+    <input type="submit" name="Cansel" value="Cansel"/>
+}

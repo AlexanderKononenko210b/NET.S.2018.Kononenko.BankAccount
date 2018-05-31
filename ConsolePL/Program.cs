@@ -38,19 +38,19 @@ namespace ConsolePL
             {
                 #region Test add new account
 
-                var person = userService.Create("Fedor", "Bondarchuk", "RT1234134", "bondarchuk@gmail.com");
+                var personFirst = userService.Create("Fedor", "Bondarchuk", "RT1234134", "bondarchuk@gmail.com");
 
-                accountService.OpenAccount(AccountType.Base, person.Id, creator);
-                accountService.OpenAccount(AccountType.Silver, person.Id, creator);
-                accountService.OpenAccount(AccountType.Gold, person.Id, creator);
-                accountService.OpenAccount(AccountType.Platinum, person.Id, creator);
+                accountService.OpenAccount("Base", personFirst.Id);
+                accountService.OpenAccount("Silver", personFirst.Id);
+                accountService.OpenAccount("Gold", personFirst.Id);
+                accountService.OpenAccount("Platinum", personFirst.Id);
 
-                var person2 = userService.Create("Fedor", "Volkov", "RT1234134", "volkov@gmail.com");
+                var personSecond = userService.Create("Fedor", "Volkov", "RT1234134", "volkov@gmail.com");
 
-                accountService.OpenAccount(AccountType.Base, person2.Id, creator);
-                accountService.OpenAccount(AccountType.Silver, person2.Id, creator);
-                accountService.OpenAccount(AccountType.Gold, person2.Id, creator);
-                accountService.OpenAccount(AccountType.Platinum, person2.Id, creator);
+                accountService.OpenAccount("Base", personSecond.Id);
+                accountService.OpenAccount("Silver", personSecond.Id);
+                accountService.OpenAccount("Gold", personSecond.Id);
+                accountService.OpenAccount("Platinum", personSecond.Id);
 
                 Console.WriteLine("After add in collection");
                 Console.WriteLine();
@@ -68,13 +68,13 @@ namespace ConsolePL
 
                 Console.WriteLine($"Befor withdraw Balance : {account.Balance}, BenefitPoints : {account.BenefitPoints}");
 
-                accountService.WithDrawAccount(account, 100);
+                accountService.WithDrawAccount(account.NumberOfAccount, 100);
 
                 account = accountService.GetByNumber("40512100790000000004");
 
                 Console.WriteLine($"After withdraw 100 Balance : {account.Balance}, BenefitPoints : {account.BenefitPoints}");
 
-                accountService.DepositAccount(account, 200);
+                accountService.DepositAccount(account.NumberOfAccount, 200);
 
                 account = accountService.GetByNumber("40512100790000000004");
 
@@ -91,7 +91,8 @@ namespace ConsolePL
                 Console.WriteLine($"Before transfer balance account for withdraw {accountWithDrawTransfer.Balance}" +
                                   $"account for deposit {accountDepositTransfer.Balance}");
 
-                var resultTransfer = accountService.Transfer(accountWithDrawTransfer, accountDepositTransfer, 50);
+                var resultTransfer = accountService.Transfer(accountWithDrawTransfer.NumberOfAccount, 
+                    accountDepositTransfer.NumberOfAccount, 50);
 
                 Console.WriteLine($"After transfer balance account for withdraw {resultTransfer.Item1.Balance}" +
                                   $"account for deposit {resultTransfer.Item2.Balance}");

@@ -19,17 +19,11 @@ namespace BLL.Tests.MoqTests
     {
         #region Fields
 
-        private Mock<IUnitOfWork> mockUnitOfWork;
-
         private Mock<IUserRepository> mockUserInfo;
 
         private string numberAccount = "40512100790000000004";
 
-        private UserInfo userInfo;
-
         private UserInfoDto userInfoDto;
-
-        private AccountDto accountDto;
 
         #endregion
 
@@ -40,17 +34,6 @@ namespace BLL.Tests.MoqTests
         {
             mockUserInfo = new Mock<IUserRepository>();
 
-            mockUnitOfWork = new Mock<IUnitOfWork>();
-
-            userInfo = new UserInfo
-            {
-                Id = 1,
-                FirstName = "Fedor",
-                LastName = "Bondarchuk",
-                Passport = "RT1234136",
-                Email = "bondarchuk@gmail.com"
-            };
-
             userInfoDto = new UserInfoDto
             {
                 Id = 1,
@@ -58,16 +41,6 @@ namespace BLL.Tests.MoqTests
                 LastName = "Bondarchuk",
                 Passport = "RT1234136",
                 Email = "bondarchuk@gmail.com"
-            };
-
-            accountDto = new AccountDto
-            {
-                AccountType = AccountTypeDto.Base,
-                Balance = new decimal(10),
-                BenefitPoints = 1,
-                IsClosed = false,
-                NumberOfAccount = numberAccount,
-                UserId = 1
             };
         }
 
@@ -87,9 +60,7 @@ namespace BLL.Tests.MoqTests
             this.mockUserInfo.Setup(item => item.Get(It.IsAny<int>()))
                 .Returns(() => userInfoDto);
 
-            this.mockUnitOfWork.Setup(item => item.Commit());
-
-            var userService = new UserService(mockUnitOfWork.Object, mockUserInfo.Object);
+            var userService = new UserService(mockUserInfo.Object);
 
             var user = userService.Create("Fedor", "Bondarchuk", "RT1234136", "bondarchuk@gmail.com");
 
@@ -111,9 +82,7 @@ namespace BLL.Tests.MoqTests
             this.mockUserInfo.Setup(item => item.Get(It.IsAny<int>()))
                 .Returns(() => userInfoDto);
 
-            this.mockUnitOfWork.Setup(item => item.Commit());
-
-            var userService = new UserService(mockUnitOfWork.Object, mockUserInfo.Object);
+            var userService = new UserService(mockUserInfo.Object);
 
             Assert.Throws<ArgumentNullException>(() =>
                 userService.Create(null, "Bondarchuk", "RT1234136", "bondarchuk@gmail.com"));
@@ -131,9 +100,7 @@ namespace BLL.Tests.MoqTests
             this.mockUserInfo.Setup(item => item.Get(It.IsAny<int>()))
                 .Returns(() => userInfoDto);
 
-            this.mockUnitOfWork.Setup(item => item.Commit());
-
-            var userService = new UserService(mockUnitOfWork.Object, mockUserInfo.Object);
+            var userService = new UserService(mockUserInfo.Object);
 
             Assert.Throws<ArgumentOutOfRangeException>(() =>
                 userService.Create("", "Bondarchuk", "RT1234136", "bondarchuk@gmail.com"));
@@ -151,9 +118,7 @@ namespace BLL.Tests.MoqTests
             this.mockUserInfo.Setup(item => item.Get(It.IsAny<int>()))
                 .Returns(() => userInfoDto);
 
-            this.mockUnitOfWork.Setup(item => item.Commit());
-
-            var userService = new UserService(mockUnitOfWork.Object, mockUserInfo.Object);
+            var userService = new UserService(mockUserInfo.Object);
 
             Assert.Throws<ArgumentOutOfRangeException>(() =>
                 userService.Create(" ", "Bondarchuk", "RT1234136", "bondarchuk@gmail.com"));
@@ -171,9 +136,7 @@ namespace BLL.Tests.MoqTests
             this.mockUserInfo.Setup(item => item.Get(It.IsAny<int>()))
                 .Returns(() => userInfoDto);
 
-            this.mockUnitOfWork.Setup(item => item.Commit());
-
-            var userService = new UserService(mockUnitOfWork.Object, mockUserInfo.Object);
+            var userService = new UserService(mockUserInfo.Object);
 
             Assert.Throws<ArgumentOutOfRangeException>(() =>
                 userService.Create("1234", "Bondarchuk", "RT1234136", "bondarchuk@gmail.com"));
@@ -191,9 +154,7 @@ namespace BLL.Tests.MoqTests
             this.mockUserInfo.Setup(item => item.Get(It.IsAny<int>()))
                 .Returns(() => userInfoDto);
 
-            this.mockUnitOfWork.Setup(item => item.Commit());
-
-            var userService = new UserService(mockUnitOfWork.Object, mockUserInfo.Object);
+            var userService = new UserService(mockUserInfo.Object);
 
             Assert.Throws<ArgumentOutOfRangeException>(() =>
                 userService.Create("Fedor", "bondarchuk", "RT1234136", "bondarchuk@gmail.com"));
@@ -211,9 +172,7 @@ namespace BLL.Tests.MoqTests
             this.mockUserInfo.Setup(item => item.Get(It.IsAny<int>()))
                 .Returns(() => userInfoDto);
 
-            this.mockUnitOfWork.Setup(item => item.Commit());
-
-            var userService = new UserService(mockUnitOfWork.Object, mockUserInfo.Object);
+            var userService = new UserService(mockUserInfo.Object);
 
             Assert.Throws<ArgumentOutOfRangeException>(() =>
                 userService.Create("Fedor", "bondarchuk", "RT12341", "bondarchuk@gmail.com"));
@@ -231,9 +190,7 @@ namespace BLL.Tests.MoqTests
             this.mockUserInfo.Setup(item => item.Get(It.IsAny<int>()))
                 .Returns(() => userInfoDto);
 
-            this.mockUnitOfWork.Setup(item => item.Commit());
-
-            var userService = new UserService(mockUnitOfWork.Object, mockUserInfo.Object);
+            var userService = new UserService(mockUserInfo.Object);
 
             Assert.Throws<ArgumentOutOfRangeException>(() =>
                 userService.Create("Fedor", "bondarchuk", "RT1234136", "bondarchukgmail.com"));

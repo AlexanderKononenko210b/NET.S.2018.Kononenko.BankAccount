@@ -47,77 +47,7 @@ namespace BLL.Mappers
 
         #endregion
 
-        #region Private methods
-
-        /// <summary>
-        /// Mapper from Account to AccountDto
-        /// </summary>
-        /// <param name="account">Account</param>
-        /// <returns>instance type AccountDto after mapping</returns>
-        private static AccountDto Map(Account account)
-        {
-            var accountDto = new AccountDto();
-
-            accountDto.Id = account.Id;
-            accountDto.AccountType = (AccountTypeDto)account.AccountType;
-            accountDto.Balance = account.Balance;
-            accountDto.BenefitPoints = account.BenefitPoints;
-            accountDto.IsClosed = account.IsClosed;
-            accountDto.NumberOfAccount = account.NumberOfAccount;
-            accountDto.UserId = account.UserId;
-
-            return accountDto;
-        }
-
-        /// <summary>
-        /// Mapper from AccountDto to Account
-        /// </summary>
-        /// <param name="accountDto">instance AccountDto</param>
-        /// <returns></returns>
-        private static Account Map(AccountDto accountDto)
-        {
-            var account = AccountFactory.Create(accountDto);
-
-            return account;
-        }
-        
-        /// <summary>
-        /// Mapper from userInfo to UserInfoDto
-        /// </summary>
-        /// <param name="userInfo">information abount User</param>
-        /// <returns>Dto model information about User</returns>
-        private static UserInfoDto Map(UserInfo userInfo)
-        {
-            var userInfoDto = new UserInfoDto
-            {
-                Id = userInfo.Id,
-                FirstName = userInfo.FirstName,
-                LastName = userInfo.LastName,
-                Passport = userInfo.Passport,
-                Email = userInfo.Email
-            };
-
-            return userInfoDto;
-        }
-
-        /// <summary>
-        /// Mapper from UserInfoDto to userInfo
-        /// </summary>
-        /// <param name="userInfoDto">information abount User</param>
-        /// <returns>user information about User</returns>
-        private static UserInfo Map(UserInfoDto userInfoDto)
-        {
-            var userInfo = new UserInfo
-            {
-                Id = userInfoDto.Id,
-                FirstName = userInfoDto.FirstName,
-                LastName = userInfoDto.LastName,
-                Passport = userInfoDto.Passport,
-                Email = userInfoDto.Email
-            };
-
-            return userInfo;
-        }
+        #region Map BLL model`s to UI model`s and resive
 
         /// <summary>
         /// Mapper from Account to AccountViewDto
@@ -184,6 +114,80 @@ namespace BLL.Mappers
                 LastName = userViewDto.LastName,
                 Passport = userViewDto.Passport,
                 Email = userViewDto.Email
+            };
+
+            return userInfo;
+        }
+
+        #endregion
+
+        #region Map Dall model`s to BLL model`s and resive
+
+        /// <summary>
+        /// Mapper from Account to AccountDto
+        /// </summary>
+        /// <param name="account">Account</param>
+        /// <returns>instance type AccountDto after mapping</returns>
+        private static AccountDto Map(Account account)
+        {
+            var accountDto = new AccountDto();
+
+            accountDto.Id = account.Id;
+            accountDto.AccountType = (AccountTypeDto)account.AccountType;
+            accountDto.Balance = account.Balance;
+            accountDto.BenefitPoints = account.BenefitPoints;
+            accountDto.IsClosed = account.IsClosed;
+            accountDto.NumberOfAccount = account.NumberOfAccount;
+            accountDto.UserId = account.UserId;
+
+            return accountDto;
+        }
+
+        /// <summary>
+        /// Mapper from AccountDto to Account
+        /// </summary>
+        /// <param name="accountDto">instance AccountDto</param>
+        /// <returns></returns>
+        private static Account Map(AccountDto accountDto)
+        {
+            var account = AccountFactory.Create(accountDto);
+
+            return account;
+        }
+        
+        /// <summary>
+        /// Mapper from userInfo to UserInfoDto
+        /// </summary>
+        /// <param name="userInfo">information abount User</param>
+        /// <returns>Dto model information about User</returns>
+        private static UserInfoDto Map(UserInfo userInfo)
+        {
+            var userInfoDto = new UserInfoDto
+            {
+                Id = userInfo.Id,
+                FirstName = userInfo.FirstName,
+                LastName = userInfo.LastName,
+                Passport = userInfo.Passport,
+                Email = userInfo.Email
+            };
+
+            return userInfoDto;
+        }
+
+        /// <summary>
+        /// Mapper from UserInfoDto to userInfo
+        /// </summary>
+        /// <param name="userInfoDto">information abount User</param>
+        /// <returns>user information about User</returns>
+        private static UserInfo Map(UserInfoDto userInfoDto)
+        {
+            var userInfo = new UserInfo
+            {
+                Id = userInfoDto.Id,
+                FirstName = userInfoDto.FirstName,
+                LastName = userInfoDto.LastName,
+                Passport = userInfoDto.Passport,
+                Email = userInfoDto.Email
             };
 
             return userInfo;

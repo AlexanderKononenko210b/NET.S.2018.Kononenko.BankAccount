@@ -1,0 +1,13 @@
+﻿@model MvcPL.Models.AccountViewModel
+
+@{
+    ViewBag.Title = "OperationSuccess";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h4>@ViewData["Operation"] from account @Model.NumberOfAccount value @ViewData["Deposit"] successfully</h4>
+
+<p>
+    @Html.ActionLink("Back to List", "GetAll")
+</p>
+

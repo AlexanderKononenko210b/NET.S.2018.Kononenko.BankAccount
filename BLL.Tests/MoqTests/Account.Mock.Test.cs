@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BLL.Factories;
+using BLL.Interface.Dto;
 using BLL.Interface.Entities;
 using BLL.Interface.Enum;
 using BLL.Interface.Interfaces;
+using BLL.Mappers;
 using BLL.Service;
 using DAL.Interface.Dto;
 using DAL.Interface.Interfaces;
@@ -27,11 +29,13 @@ namespace BLL.Tests.MoqTests
 
         private Mock<IUserService> mockUserInfo;
 
-        private Mock<IUnitOfWork> mockUnitOfWork;
+        private Mock<IAccountNumberCreateService> mockNumber;
 
-        private string numberAccount = "40512100790000000001";
+        private string numberFirst = "40512100790000000001";
 
-        private UserInfo userInfo;
+        private string numberSecond = "40512100790000000002";
+
+        private UserViewDto userViewDto;
 
         private AccountDto accountDtoFirst;
 
@@ -48,11 +52,23 @@ namespace BLL.Tests.MoqTests
         {
             mockAccount = new Mock<IAccountRepository>();
 
+            this.mockAccount.Setup(item => item.Add(It.IsAny<AccountDto>()))
+                .Returns(() => accountDto);
+
+            this.mockAccount.Setup(item => item.Get(It.IsAny<string>()))
+                .Returns(() => accountDto);
+
             mockUserInfo = new Mock<IUserService>();
 
-            mockUnitOfWork = new Mock<IUnitOfWork>();
+            this.mockUserInfo.Setup(item => item.Get(It.IsAny<int>()))
+                .Returns(() => userViewDto);
 
-            userInfo = new UserInfo
+            mockNumber = new Mock<IAccountNumberCreateService>();
+
+            this.mockNumber.Setup(item => item.GetNumberAccount())
+                .Returns(() => numberFirst);
+
+            userViewDto = new UserViewDto
             {
                 Id = 1,
                 FirstName = "Fedor",
@@ -63,31 +79,34 @@ namespace BLL.Tests.MoqTests
 
             accountDto = new AccountDto
             {
+                Id = 1,
                 AccountType = AccountTypeDto.Base,
                 Balance = new decimal(10),
                 BenefitPoints = 10,
                 IsClosed = false,
-                NumberOfAccount = numberAccount,
+                NumberOfAccount = numberFirst,
                 UserId = 1
             };
 
             accountDtoFirst = new AccountDto
             {
+                Id = 1,
                 AccountType = AccountTypeDto.Base,
                 Balance = new decimal(5),
                 BenefitPoints = 5,
                 IsClosed = false,
-                NumberOfAccount = numberAccount,
+                NumberOfAccount = numberFirst,
                 UserId = 1
             };
 
             accountDtoSecond = new AccountDto
             {
+                Id = 1,
                 AccountType = AccountTypeDto.Base,
                 Balance = new decimal(15),
                 BenefitPoints = 15,
                 IsClosed = false,
-                NumberOfAccount = numberAccount,
+                NumberOfAccount = numberFirst,
                 UserId = 1
             };
         }
@@ -102,24 +121,16 @@ namespace BLL.Tests.MoqTests
         [TestCase]
         public void Open_Account_With_Valid_Data()
         {
-            this.mockAccount.Setup(item => item.Add(It.IsAny<AccountDto>()))
-                .Returns(() => accountDto);
+            var service = new AccountService(mockAccount.Object, mockUserInfo.Object, mockNumber.Object);
 
-            this.mockUserInfo.Setup(item => item.Get(It.IsAny<int>()))
-                .Returns(() => userInfo);
+            var resultAdd = service.OpenAccount("Base", userViewDto.Id);
 
-            this.mockUnitOfWork.Setup(item => item.Commit());
-
-            var service = new AccountService(mockUnitOfWork.Object, mockAccount.Object, mockUserInfo.Object);
-
-            var resultAdd = service.OpenAccount(AccountType.Base, userInfo.Id, new NumberCreateService());
-
-            Assert.AreEqual(AccountType.Base, resultAdd.AccountType);
+            Assert.AreEqual("Base", resultAdd.AccountType);
             Assert.AreEqual("40512100790000000001", resultAdd.NumberOfAccount);
-			Assert.AreEqual(10m, resultAdd.Balance);
-			Assert.AreEqual(10, resultAdd.BenefitPoints);
-			Assert.AreEqual(false, resultAdd.IsClosed);
-			Assert.AreEqual(1, resultAdd.UserId);
+            Assert.AreEqual(10m, resultAdd.Balance);
+            Assert.AreEqual(10, resultAdd.BenefitPoints);
+            Assert.AreEqual(false, resultAdd.IsClosed);
+            Assert.AreEqual(1, resultAdd.UserId);
         }
 
         /// <summary>
@@ -129,22 +140,17 @@ namespace BLL.Tests.MoqTests
         public void Deposit_Account_With_Valid_Data()
         {
             this.mockAccount.Setup(item => item.Update(It.IsAny<AccountDto>()))
-                .Returns(() => accountDto).Callback(() => accountDto.Balance += 100);
+                .Callback(() => HelperDeposit(accountDto, 100))
+                .Returns(() => accountDto);
 
-            this.mockUserInfo.Setup(item => item.Get(It.IsAny<int>()))
-                .Returns(() => userInfo);
+            var service = new AccountService(mockAccount.Object, mockUserInfo.Object, mockNumber.Object);
 
-            this.mockUnitOfWork.Setup(item => item.Commit());
+            var account = service.OpenAccount("Base", userViewDto.Id);
 
-            var service = new AccountService(mockUnitOfWork.Object, mockAccount.Object, mockUserInfo.Object);
+            var resultDeposite = service.DepositAccount(account.NumberOfAccount, 100);
 
-            var account = AccountFactory.Create(AccountType.Base, userInfo.Id, new NumberCreateService());
-
-            var resultDeposite = service.DepositAccount(account, 100);
-
-            Assert.AreEqual(110m, resultDeposite);
-			Assert.AreEqual(110m, account.Balance);
-            Assert.AreEqual(110, account.BenefitPoints);
+            Assert.AreEqual(110m, resultDeposite.Balance);
+            Assert.AreEqual(110, resultDeposite.BenefitPoints);
         }
 
         /// <summary>
@@ -154,22 +160,17 @@ namespace BLL.Tests.MoqTests
         public void WithDraw_Account_With_Valid_Data()
         {
             this.mockAccount.Setup(item => item.Update(It.IsAny<AccountDto>()))
-                .Returns(() => accountDto).Callback(() => accountDto.Balance -= 5);
+                .Callback(() => HelperWithdraw(accountDto, 5))
+                .Returns(() => accountDto);
 
-            this.mockUserInfo.Setup(item => item.Get(It.IsAny<int>()))
-                .Returns(() => userInfo);
+            var service = new AccountService(mockAccount.Object, mockUserInfo.Object, mockNumber.Object);
 
-            this.mockUnitOfWork.Setup(item => item.Commit());
+            var account = service.OpenAccount("Base", userViewDto.Id);
 
-            var service = new AccountService(mockUnitOfWork.Object, mockAccount.Object, mockUserInfo.Object);
+            var resultWithDraw = service.WithDrawAccount(account.NumberOfAccount, 5);
 
-            var account = AccountFactory.Create(AccountType.Base, userInfo.Id, new NumberCreateService());
-
-            var resultWithDraw = service.WithDrawAccount(account, 5);
-
-            Assert.AreEqual(5m, resultWithDraw);
-            Assert.AreEqual(5m, account.Balance);
-            Assert.AreEqual(5, account.BenefitPoints);
+            Assert.AreEqual(5m, resultWithDraw.Balance);
+            Assert.AreEqual(5, resultWithDraw.BenefitPoints);
         }
 
         /// <summary>
@@ -182,25 +183,26 @@ namespace BLL.Tests.MoqTests
                 .Returns(accountDtoFirst)
                 .Returns(accountDtoSecond);
 
-            this.mockUserInfo.Setup(item => item.Get(It.IsAny<int>()))
-                .Returns(() => userInfo);
+            this.mockNumber.Setup(item => item.GetNumberAccount())
+                .Returns(() => numberFirst);
 
-            this.mockUnitOfWork.Setup(item => item.Commit());
+            var service = new AccountService(mockAccount.Object, mockUserInfo.Object, mockNumber.Object);
 
-            var service = new AccountService(mockUnitOfWork.Object, mockAccount.Object, mockUserInfo.Object);
-
-            var accountFirst = AccountFactory.Create(AccountType.Base, userInfo.Id, new NumberCreateService());
+            var accountFirst = service.OpenAccount("Base", userViewDto.Id);
 
             Assert.AreEqual(10m, accountFirst.Balance);
             Assert.AreEqual(10, accountFirst.BenefitPoints);
 
-            var accountSecond = AccountFactory.Create(AccountType.Base, userInfo.Id, new NumberCreateService());
+            this.mockNumber.Setup(item => item.GetNumberAccount())
+                .Returns(() => numberSecond);
+
+            var accountSecond = service.OpenAccount("Base", userViewDto.Id);
 
             Assert.AreEqual(10m, accountSecond.Balance);
             Assert.AreEqual(10, accountSecond.BenefitPoints);
 
-            var resultTransfer = service.Transfer(accountFirst, accountSecond, 5);
-			
+            var resultTransfer = service.Transfer(accountFirst.NumberOfAccount, accountSecond.NumberOfAccount, 5);
+
             Assert.AreEqual(5m, resultTransfer.Item1.Balance);
             Assert.AreEqual(5, resultTransfer.Item1.BenefitPoints);
             Assert.AreEqual(15m, resultTransfer.Item2.Balance);
@@ -213,29 +215,43 @@ namespace BLL.Tests.MoqTests
         [TestCase]
         public void Close_Account()
         {
-            accountDto.IsClosed = true;
+            var accountDtoClose = new AccountDto
+            {
+                Id = 1,
+                AccountType = AccountTypeDto.Base,
+                Balance = new decimal(0),
+                BenefitPoints = 0,
+                IsClosed = true,
+                NumberOfAccount = numberFirst,
+                UserId = 1
+            };
 
-            accountDto.Balance = 0;
+            var accountDtoWithdraw = new AccountDto
+            {
+                Id = 1,
+                AccountType = AccountTypeDto.Base,
+                Balance = new decimal(0),
+                BenefitPoints = 0,
+                IsClosed = false,
+                NumberOfAccount = numberFirst,
+                UserId = 1
+            };
 
-            this.mockAccount.Setup(item => item.Update(It.IsAny<AccountDto>()))
-                .Returns(() => accountDto);
+            this.mockAccount.SetupSequence(item => item.Update(It.IsAny<AccountDto>()))
+                .Returns(accountDtoWithdraw)
+                .Returns(accountDtoClose);
+                
+            var service = new AccountService(mockAccount.Object, mockUserInfo.Object, mockNumber.Object);
 
-            this.mockUserInfo.Setup(item => item.Get(It.IsAny<int>()))
-                .Returns(() => userInfo);
+            var account = service.OpenAccount("Base", userViewDto.Id);
 
-            this.mockUnitOfWork.Setup(item => item.Commit());
+            var accountViewDto = service.WithDrawAccount(account.NumberOfAccount, 10);
 
-            var service = new AccountService(mockUnitOfWork.Object, mockAccount.Object, mockUserInfo.Object);
+            Assert.AreEqual(0m, accountViewDto.Balance);
 
-            var account = AccountFactory.Create(AccountType.Base, userInfo.Id, new NumberCreateService());
+            var result = service.Close(accountViewDto);
 
-            var addiction = service.WithDrawAccount(account, 10);
-
-			Assert.AreEqual(0m, account.Balance);
-
-            var result = service.Close(account);
-
-            Assert.IsTrue(account.IsClosed);
+            Assert.IsTrue(result);
         }
 
         /// <summary>
@@ -247,16 +263,37 @@ namespace BLL.Tests.MoqTests
             this.mockAccount.Setup(item => item.Update(It.IsAny<AccountDto>()))
                 .Returns(() => accountDto).Callback(() => accountDto.IsClosed = true);
 
-            this.mockUserInfo.Setup(item => item.Get(It.IsAny<int>()))
-                .Returns(() => userInfo);
+            var service = new AccountService(mockAccount.Object, mockUserInfo.Object, mockNumber.Object);
 
-            this.mockUnitOfWork.Setup(item => item.Commit());
-
-            var service = new AccountService(mockUnitOfWork.Object, mockAccount.Object, mockUserInfo.Object);
-
-            var account = AccountFactory.Create(AccountType.Base, userInfo.Id, new NumberCreateService());
+            var account = service.OpenAccount("Base", userViewDto.Id);
 
             Assert.Throws<InvalidOperationException>(() => service.Close(account));
+        }
+
+        #endregion
+
+        #region Helper
+
+        /// <summary>
+        /// Helper method for initialize accountDto instance after deposite
+        /// </summary>
+        /// <param name="dto">accountDto</param>
+        /// <param name="valueDiposit">deposite value</param>
+        private void HelperDeposit(AccountDto dto, int valueDiposit)
+        {
+            dto.Balance += valueDiposit;
+            dto.BenefitPoints += valueDiposit;
+        }
+
+        /// <summary>
+        /// Helper method for initialize accountDto instance after withdraw
+        /// </summary>
+        /// <param name="dto">accountDto</param>
+        /// <param name="valueWithDraw">withDraw value</param>
+        private void HelperWithdraw(AccountDto dto, int valueWithDraw)
+        {
+            dto.Balance -= valueWithDraw;
+            dto.BenefitPoints -= valueWithDraw;
         }
 
         #endregion

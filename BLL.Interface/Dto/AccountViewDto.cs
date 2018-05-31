@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BLL.Interface.Enum;
 using DAL.Interface.Dto;
 
 namespace BLL.Interface.Dto
@@ -22,7 +23,7 @@ namespace BLL.Interface.Dto
         /// <summary>
         /// Get and Set account type
         /// </summary>
-        public string AccountType { get; set; }
+        public  string AccountType { get; set; }
 
         /// <summary>
         /// Get and Set number bank account
@@ -48,6 +49,15 @@ namespace BLL.Interface.Dto
         /// Get and Set user info
         /// </summary>
         public int UserId { get; set; }
+
+        /// <summary>
+        /// Override virtual method ToString
+        /// </summary>
+        /// <returns>instance in string representation</returns>
+        public override string ToString()
+        {
+            return $"Number account: {this.NumberOfAccount}, Balanse: {this.Balance}, BenefitPoints: {this.BenefitPoints}, IsClosed : {this.IsClosed}";
+        }
 
         #endregion
     }

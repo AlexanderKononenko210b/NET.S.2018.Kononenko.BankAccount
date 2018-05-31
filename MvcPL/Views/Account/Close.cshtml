@@ -1,0 +1,70 @@
+﻿@model MvcPL.Models.AccountViewModel
+
+@{
+    ViewBag.Title = "Close";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3>Close account</h3>
+
+<h4>Attention! Closing the account will lead to the impossibility 
+    of using it in the future! If you want to continue, click the "Close" 
+    or "Cansel" button to cancel the action.</h4>
+
+
+@using (Html.BeginForm("Action", "Account"))
+{
+    @Html.AntiForgeryToken()
+    
+<div class="form-horizontal">
+    <h4>Account for close</h4>
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.IsClosed)
+    @Html.HiddenFor(model => model.UserId)
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.AccountType, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.AccountType, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.NumberOfAccount, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.NumberOfAccount, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Balance, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Balance, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.BenefitPoints, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.BenefitPoints, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+        </div>
+    </div>
+
+    
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-4">
+            <input type="submit" name="Close" value="Close" class="btn btn-default" />
+        </div>
+
+        <div class="col-md-offset-0 col-md-6">
+            <input type="submit" name="Cansel" value="Cansel" class="btn btn-default" />
+        </div>
+    </div>
+</div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -30,12 +30,10 @@ namespace DependencyResolver
             if (isWeb)
             {
                 kernel.Bind<DbContext>().To<AccountContext>().InRequestScope();
-                kernel.Bind<IUnitOfWork>().To<UnitOfWork>().InRequestScope();
             }
             else
             {
                 kernel.Bind<DbContext>().To<AccountContext>().InSingletonScope();
-                kernel.Bind<IUnitOfWork>().To<UnitOfWork>().InSingletonScope();
             }
 
             kernel.Bind<IAccountNumberCreateService>().To<NumberCreateService>().InSingletonScope();

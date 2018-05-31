@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BLL.Exceptions;
+using BLL.Interface.Dto;
 using BLL.Interface.Entities;
 using BLL.Interface.Interfaces;
 using BLL.Mappers;
@@ -20,18 +21,14 @@ namespace BLL.Service
     {
         #region Fields
 
-        private IUnitOfWork unitOfWork;
-
         private IUserRepository userRepository;
 
         #endregion
 
         #region Constructors
 
-        public UserService(IUnitOfWork unitOfWork, IUserRepository userRepository)
+        public UserService(IUserRepository userRepository)
         {
-            this.unitOfWork = unitOfWork;
-
             this.userRepository = userRepository;
         }
 
@@ -67,7 +64,7 @@ namespace BLL.Service
         /// </summary>
         /// <param name="id">identificator</param>
         /// <returns>instance type UserInfo</returns>
-        public UserInfo Get(int id)
+        public UserViewDto Get(int id)
         {
             if (id <= 0)
                 throw new ArgumentOutOfRangeException($"Argument {id} is not valid");
@@ -79,7 +76,7 @@ namespace BLL.Service
 
             var user = Mapper<UserInfoDto, UserInfo>.Map(resultFind);
 
-            return user;
+            return Mapper<UserInfo, UserViewDto>.MapView(user);
         }
 
         #endregion

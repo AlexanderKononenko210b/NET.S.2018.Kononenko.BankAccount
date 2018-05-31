@@ -92,7 +92,7 @@ namespace BLL.Service
         public string GetNumberAccount()
         {
             var result = $"{NUMBER_BANKING_ACCOUNTING}{SPECIAL_NUMBER}" +
-                         $"{NUMBER_DEPARTMENT_BANK}{GetNumberCountAccountInDepartment(++this.CountAccountInDepartment)}";
+                         $"{NUMBER_DEPARTMENT_BANK}{GetNumberCountAccountInDepartment(new Random().Next(6,100000))}";
 
             return result;
         }

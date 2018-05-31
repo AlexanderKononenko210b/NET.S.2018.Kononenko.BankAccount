@@ -128,6 +128,14 @@ namespace DAL.Repositories
             return model;
         }
 
+        /// <summary>
+        /// Method commit for save several operation
+        /// </summary>
+        public void Commit()
+        {
+            this.context.SaveChanges();
+        }
+
         #endregion
 
         #region Disposable

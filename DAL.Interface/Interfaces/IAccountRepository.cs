@@ -16,5 +16,7 @@ namespace DAL.Interface.Interfaces
         AccountDto Get(string number);
 
         IEnumerable<AccountDto> GetAll();
+
+        IEnumerable<string> GetNumbers(int userId);
     }
 }

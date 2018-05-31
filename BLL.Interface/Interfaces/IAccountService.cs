@@ -16,16 +16,20 @@ namespace BLL.Interface.Interfaces
     {
         IEnumerable<AccountViewDto> GetAll();
 
-        Account GetByNumber(string number);
+        AccountViewDto Get(int id);
 
-        Account OpenAccount(AccountType type, int userId, IAccountNumberCreateService creator);
+        AccountViewDto GetByNumber(string number);
 
-        decimal DepositAccount(Account account, decimal deposit);
+        IEnumerable<string> GetAllNumbers(int userId);
 
-        decimal WithDrawAccount(Account account, decimal withdraw);
+        AccountViewDto OpenAccount(string type, int userId);
 
-        bool Close(Account account);
+        AccountViewDto DepositAccount(string numberAccount, decimal deposit);
 
-        (Account, Account) Transfer(Account first, Account second, decimal transfer);
+        AccountViewDto WithDrawAccount(string numberAccount, decimal withdraw);
+
+        bool Close(AccountViewDto account);
+
+        (AccountViewDto, AccountViewDto) Transfer(string numberFirst, string numberSecond, decimal transfer);
     }
 }

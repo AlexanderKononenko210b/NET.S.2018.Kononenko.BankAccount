@@ -6,7 +6,7 @@ using System.Web;
 using BLL.Interface.Dto;
 using BLL.Interface.Entities;
 using MvcPL.Models;
-using MvcPL.Validators;
+using MvcPL.Infrastructure.Validators;
 
 namespace MvcPL.Mapper
 {
@@ -59,8 +59,8 @@ namespace MvcPL.Mapper
                 {
                     Id = item.Id,
                     AccountType = item.AccountType,
-                    Balance = item.Balance,
-                    BenefitPoints = item.BenefitPoints,
+                    Balance = item.Balance.ToString("G"),
+                    BenefitPoints = item.BenefitPoints.ToString("G"),
                     IsClosed = item.IsClosed,
                     NumberOfAccount = item.NumberOfAccount,
                     UserId = item.UserId
@@ -83,8 +83,8 @@ namespace MvcPL.Mapper
             {
                 Id = account.Id,
                 AccountType = account.AccountType,
-                Balance = account.Balance,
-                BenefitPoints = account.BenefitPoints,
+                Balance = Convert.ToDecimal(account.Balance),
+                BenefitPoints = Convert.ToInt32(account.BenefitPoints),
                 IsClosed = account.IsClosed,
                 NumberOfAccount = account.NumberOfAccount,
                 UserId = account.UserId
@@ -104,8 +104,8 @@ namespace MvcPL.Mapper
             {
                 Id = accountViewDto.Id,
                 AccountType = accountViewDto.AccountType,
-                Balance = accountViewDto.Balance,
-                BenefitPoints = accountViewDto.BenefitPoints,
+                Balance = accountViewDto.Balance.ToString("G"),
+                BenefitPoints = accountViewDto.BenefitPoints.ToString("G"),
                 IsClosed = accountViewDto.IsClosed,
                 NumberOfAccount = accountViewDto.NumberOfAccount,
                 UserId = accountViewDto.UserId

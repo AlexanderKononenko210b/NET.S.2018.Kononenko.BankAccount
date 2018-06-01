@@ -6,6 +6,7 @@ using System.Net;
 using System.Resources;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.UI.WebControls;
 using BLL.Interface.Dto;
 using BLL.Interface.Interfaces;
 using DependencyResolver;
@@ -218,7 +219,9 @@ namespace MvcPL.Controllers
                 if (numbers == null || numbers.Any() == false)
                     return View("Info", "", Resources.NotExistAccounts);
 
-                return View("Deposit", numbers);
+                ViewData["Numbers"] = new SelectList(numbers);
+
+                return View("Deposit");
             }
             catch (Exception e)
             {
@@ -231,29 +234,43 @@ namespace MvcPL.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult Deposit(string numberAccount, string deposit)
+        public ActionResult Deposit(DepositAndWithDrawViewModel model)
         {
-            if (numberAccount == null || deposit == null)
-                return View("Error", "", Resources.NullArgument);
-
             try
             {
+                Check.NotNull(model);
+
+                Check.CheckString(model.AccountNumber);
+
+                Check.CheckString(model.Value);
+
                 decimal value;
 
-                if (Decimal.TryParse(deposit, out value))
+                if (Decimal.TryParse(model.Value, out value))
                 {
-                    var resultDepositDto = accountService.DepositAccount(numberAccount, value);
+                    var resultDepositDto = accountService.DepositAccount(model.AccountNumber, value);
 
                     var resultDeposit = Mapper<AccountViewDto, AccountViewModel>.MapView(resultDepositDto);
 
                     ViewData["Operation"] = "Deposit";
 
-                    ViewData["Deposit"] = deposit;
+                    ViewData["Deposit"] = model.Value;
 
                     return View("OperationSuccess", resultDeposit);
                 }
 
-                return View("Error", Resources.DepositValueNotValid);
+                var userId = 86;//Get userId from Request
+
+                var numbers = accountService.GetAllNumbers(userId);
+
+                if (numbers == null || numbers.Any() == false)
+                    return View("Info", "", Resources.NotExistAccounts);
+
+                ViewData["Numbers"] = new SelectList(numbers);
+
+                ViewData["Message"] = Resources.DepositValueNotValid;
+
+                return View("Deposit");
             }
             catch (Exception e)
             {
@@ -281,7 +298,9 @@ namespace MvcPL.Controllers
                 if (numbers == null || numbers.Any() == false)
                     return View("Info", "", Resources.NotExistAccounts);
 
-                return View("WithDraw", numbers);
+                ViewData["Numbers"] = new SelectList(numbers);
+
+                return View("WithDraw");
             }
             catch (Exception e)
             {
@@ -292,32 +311,45 @@ namespace MvcPL.Controllers
         /// <summary>
         /// Post form with information about account and value withdraw
         /// </summary>
-        /// <param name="numberAccount">accounts number</param>
-        /// <param name="withdraw">value withdraw</param>
+        /// <param name="model">model type DepositAndWithDrawViewModel</param>
         [HttpPost]
-        public ActionResult WithDraw(string numberAccount, string withdraw)
+        public ActionResult WithDraw(DepositAndWithDrawViewModel model)
         {
-            if (numberAccount == null || withdraw == null)
-                return View("Error", "", Resources.NullArgument);
-
             try
             {
+                Check.NotNull(model);
+
+                Check.CheckString(model.AccountNumber);
+
+                Check.CheckString(model.Value);
+
                 decimal value;
 
-                if (Decimal.TryParse(withdraw, out value))
+                if (Decimal.TryParse(model.Value, out value))
                 {
-                    var resultWithDrawDto = accountService.WithDrawAccount(numberAccount, value);
+                    var resultWithDrawDto = accountService.WithDrawAccount(model.AccountNumber, value);
 
                     var resultWithDraw = Mapper<AccountViewDto, AccountViewModel>.MapView(resultWithDrawDto);
 
                     ViewData["Operation"] = "WithDraw";
 
-                    ViewData["Deposit"] = withdraw;
+                    ViewData["Deposit"] = model.Value;
 
                     return View("OperationSuccess", resultWithDraw);
                 }
 
-                return View("Error", Resources.WithDrawValueNotValid);
+                var userId = 86;//Get userId from Request
+
+                var numbers = accountService.GetAllNumbers(userId);
+
+                if (numbers == null || numbers.Any() == false)
+                    return View("Info", "", Resources.NotExistAccounts);
+
+                ViewData["Numbers"] = new SelectList(numbers);
+
+                ViewData["Message"] = Resources.WithDrawValueNotValid;
+
+                return View("WithDraw");
             }
             catch (Exception e)
             {
@@ -362,37 +394,43 @@ namespace MvcPL.Controllers
         [HttpPost]
         public ActionResult Transfer(TransferViewModel model)
         {
-            if (model.FirstNumber == null || model.SecondNumber == null || model.Transfer == null)
-                return View("Error", "", Resources.NullArgument);
-
-            if (model.FirstNumber.Equals(model.SecondNumber, StringComparison.CurrentCulture))
-            {
-                var userId = 86;//Get userId from Request
-
-                var numbers = accountService.GetAllNumbers(userId);
-
-                if (numbers == null || numbers.Any() == false)
-                    return View("Info", "", Resources.NotExistAccounts);
-
-                ViewData["Numbers"] = new SelectList(numbers);
-
-                ViewData["Message"] = Resources.DublicatedNumberAccount;
-
-                return View("Transfer");
-            }
-
             try
             {
+
+                Check.NotNull(model);
+
+                Check.CheckString(model.FirstNumber);
+
+                Check.CheckString(model.SecondNumber);
+
+                Check.CheckString(model.Value);
+
+                if (model.FirstNumber.Equals(model.SecondNumber, StringComparison.CurrentCulture))
+                {
+                    var userId = 86;//Get userId from Request
+
+                    var numbers = accountService.GetAllNumbers(userId);
+
+                    if (numbers == null || numbers.Any() == false)
+                        return View("Info", "", Resources.NotExistAccounts);
+
+                    ViewData["Numbers"] = new SelectList(numbers);
+
+                    ViewData["Message"] = Resources.DublicatedNumberAccount;
+
+                    return View("Transfer");
+                }
+
                 decimal value;
 
-                if (Decimal.TryParse(model.Transfer, out value))
+                if (Decimal.TryParse(model.Value, out value))
                 {
                     var resultTransferDto = accountService.Transfer(model.FirstNumber, model.SecondNumber, value);
 
                     var resultTransfer = (Mapper<AccountViewDto, AccountViewModel>.MapView(resultTransferDto.Item1),
                         Mapper<AccountViewDto, AccountViewModel>.MapView(resultTransferDto.Item2));
 
-                    ViewData["Transfer"] = model.Transfer;
+                    ViewData["Transfer"] = model.Value;
 
                     return View("TransferSuccess", resultTransfer);
                 }

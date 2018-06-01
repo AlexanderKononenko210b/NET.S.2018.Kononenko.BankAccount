@@ -67,13 +67,13 @@ namespace MvcPL.Controllers
         /// <summary>
         /// Validation value as Decimal type
         /// </summary>
-        /// <param name="transfer">input value</param>
+        /// <param name="value">input value</param>
         /// <returns>json result</returns>
-        public JsonResult DecimalValueValid(string transfer)
+        public JsonResult DecimalValueValid(string value)
         {
-            Decimal value;
+            Decimal valueDecimal;
 
-            if (!Decimal.TryParse(transfer, out value))
+            if (!Decimal.TryParse(value, out valueDecimal))
             {
                 return Json($"{Resources.InvalidInputValue}", JsonRequestBehavior.AllowGet);
             }

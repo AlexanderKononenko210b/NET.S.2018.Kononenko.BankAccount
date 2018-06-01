@@ -180,6 +180,7 @@
     <Compile Include="Mapper\Mapper.cs" />
     <Compile Include="Models\AccountViewModel.cs" />
     <Compile Include="Models\CreateAccountViewModel.cs" />
+    <Compile Include="Models\DepositAndWithDrawViewModel.cs" />
     <Compile Include="Models\TransferViewModel.cs" />
     <Compile Include="Models\UserViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -21,6 +21,6 @@ namespace MvcPL.Models
 
         [Required(ErrorMessage = "Please enter transfer value")]
         [Remote("DecimalValueValid", "Validation")]
-        public string Transfer { get; set; }
+        public string Value { get; set; }
     }
 }
